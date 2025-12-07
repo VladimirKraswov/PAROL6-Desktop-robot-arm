@@ -1,19 +1,56 @@
-PETG stands out among 3D printing materials for its versatility, offering a blend of strength and ease of use. Its popularity has surged as a viable alternative to PLA due to its distinctive properties. PETG, short for Polyethylene Terephthalate Glycol-modified, undergoes a structural change enhancing transparency, durability, and printability.
+PETG — один из самых универсальных материалов для 3D-печати, который сочетает в себе прочность, удобство работы и отличные механические свойства. В последние годы он практически вытеснил PLA в проектах, где нужна реальная надёжность, и стал «золотой серединой» между PLA и ABS.
 
-When considering PETG, it's essential to weigh its attributes against other materials like PLA and ABS:
+PETG — это модифицированный полиэтилентерефталат с добавкой гликоля (Polyethylene Terephthalate Glycol-modified). Благодаря этой модификации он стал прозрачнее, прочнее, менее хрупким и намного проще в печати.
 
-* Rigidity: PETG and ABS exhibit similar rigidity, while PLA tends to be slightly more rigid.
-* Strength: PETG generally outperforms PLA and boasts superior layer adhesion compared to ABS.
-* Heat Resistance: PETG softens at around 80ºC, offering moderate heat resistance, whereas ABS leads with a softening point of 105ºC. PLA softens at a lower temperature of 50ºC.
-* Odourless Printing: Unlike ABS, PETG doesn't emit odours during printing.
-* Recyclability: PETG's widespread usage has led to widespread recycling infrastructure.
+### Сравнение PETG с PLA и ABS (актуально на 2025 год)
 
-To successfully print with PETG:
+| Характеристика              | PETG                          | PLA                           | ABS                           |
+|-----------------------------|-------------------------------|-------------------------------|-------------------------------|
+| **Жёсткость**               | Высокая (почти как у ABS)     | Чуть выше, чем у PETG         | Высокая                       |
+| **Прочность и ударная вязкость** | Лучшая среди всех трёх          | Хрупкий, ломается по слоям    | Хорошая, но хуже PETG         |
+| **Адгезия слоёв**           | Отличная (самая сильная)      | Средняя                       | Слабая (часто расслаивается)  |
+| **Термостойкость (размягчение)** | ~80–85 °C                   | ~50–60 °C                     | ~105 °C                       |
+| **Запах при печати**        | Практически отсутствует       | Слабый сладковатый            | Сильный, токсичный            |
+| **Усадка и коробление**     | Очень низкая                  | Низкая                        | Высокая                       |
+| **Перерабатываемость**      | Отлично перерабатывается (как бутылки из-под воды) | Биоразлагаемый, но редко перерабатывается | Перерабатывается, но хуже     |
 
-* Hotend Temperature: Set the hotend temperature between 220-250ºC, compatible with various 3D printers, including those with all-metal hotends or inner PTFE tubes.
-* Bed Temperature: Utilize a heated bed at 60-90ºC and consider using adhesive, such as paper glue, for better print adhesion.
-* Printer Enclosure: Although not mandatory, maintaining stable room temperatures is advisable to ensure consistent print quality.
-* Layer Fan: Employ a layer fan while printing PETG.
-* Warping: PETG's limited thermal contraction reduces warping, resulting in parts with accurate dimensions.
-* 
-By understanding these characteristics and adhering to optimal printing conditions, PETG can produce robust prints with high dimensional accuracy, catering to a variety of applications.
+### Рекомендации по печати PETG в 2025 году (особенно для крупных деталей типа PAROL6/Thor)
+
+- **Температура хотэнда**: 230–255 °C (оптимально 240–250 °C для большинства PETG).  
+  Можно печатать даже на хотэндах с PTFE-трубкой внутри (до 250 °C безопасно).
+
+- **Температура стола**: 70–90 °C (лучше 80–85 °C).  
+  Обязательно использовать клей:  
+  - Клей-карандаш (Pritt, Kores)  
+  - Magigoo, 3DLac, каптон + клей  
+  - Или просто бумажный малярный скотч + клей (очень надёжно для больших деталей).
+
+- **Корпус принтера**:  
+  Для деталей PAROL6 и Thor настоятельно рекомендуется закрытый корпус или хотя бы стабильная температура в комнате (22–25 °C). PETG очень чувствителен к сквознякам — без корпуса большие детали могут потрескаться по слоям.
+
+- **Обдув**:  
+  30–70 % (для механических деталей обычно 40–50 %).  
+  Полный обдув 100 % делает PETG хрупким, 0 % — слишком мягким и с плохой адгезией слоёв.
+
+- **Скорость печати**:  
+  40–60 мм/с для внешних стенок, 80–100 мм/с внутри — идеально.  
+  PETG позволяет печатать быстро без потери качества.
+
+- **Retraction**:  
+  Direct drive: 0.5–1.0 мм  
+  Bowden: 3–6 мм  
+  Скорость ретракции 30–45 мм/с (слишком быстро — забивает сопло).
+
+- **Flow**: обычно 95–100 % (PETG любит небольшую недоливку для лучшей прочности слоёв).
+
+### Почему именно PETG для PAROL6 и Thor в 2025 году?
+
+Все, кто собирает эти руки сейчас, печатают 90 % деталей именно из PETG (или PETG-CF, если нужен сверхжёсткий вариант).  
+Он даёт:
+- Практически нулевое коробление даже на деталях 200×200 мм
+- Прочность слоёв в 2–3 раза выше, чем у PLA
+- Долговечность — детали PAROL6, напечатанные из хорошего PETG (eSun PETG, Bambu PETG Basic, Prusament PETG), работают годами без трещин и износа.
+
+Короче: в 2025 году для серьёзных механических проектов (роботы, дроны, функциональные модели) PETG — это безальтернативный выбор №1. PLA остался только для декоративных вещей и прототипов, ABS почти умер из-за запаха и коробления.
+
+Если будешь печатать PAROL6 — бери качественный PETG (eSun, Bambu Lab, Polymaker, Prusament) и закрытый корпус. Получишь руку, которая будет работать как промышленная.
