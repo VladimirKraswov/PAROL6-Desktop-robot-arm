@@ -1,97 +1,98 @@
-/* USER CODE BEGIN Header */
+/* ПОЛЬЗОВАТЕЛЬСКИЙ КОД: НАЧАЛО ЗАГОЛОВКА */
 /**
  ******************************************************************************
- * @file    communication_CAN.cpp
- * @brief   This file provides code for CAN protocol
+ * @file    communication_CAN.cpp (реализация протокола CAN)
+ * @brief   Этот файл содержит код для реализации протокола CAN.
  * @author Petar Crnjak
  ******************************************************************************
- * @attention
+ * @attention (ВНИМАНИЕ)
  *
  * Copyright (c) Source robotics.
- * All rights reserved.
+ * Все права защищены.
  *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
+ * Данное программное обеспечение лицензировано на условиях, которые можно найти в файле LICENSE
+ * в корневом каталоге этого программного компонента.
+ * Если файл LICENSE не поставляется с этим программным обеспечением, оно предоставляется "КАК ЕСТЬ".
  *
  ******************************************************************************
  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+/* ПОЛЬЗОВАТЕЛЬСКИЙ КОД: КОНЕЦ ЗАГОЛОВКА */
+
+/* Подключаемые файлы ------------------------------------------------------------------*/
 
 #include "coms_CAN.h"
 
 /*
-The node with the lowest ID will always win the arbitration and therefore has the highest priority.
+Узел с наименьшим идентификатором (ID) всегда выигрывает арбитраж и, следовательно, имеет наивысший приоритет.
 */
-// 4 + 6 + 1; FIRST 4 MSB are ID, 6 are command ID, and last is an error bit
+// Структура CAN ID: 4 + 6 + 1; ПЕРВЫЕ 4 старших бита - это ID узла, следующие 6 - ID команды, последний - бит ошибки.
 
-CAN_msg_t CAN_TX_msg;
-CAN_msg_t CAN_RX_msg;
+CAN_msg_t CAN_TX_msg; // Структура для отправляемого CAN сообщения
+CAN_msg_t CAN_RX_msg; // Структура для принимаемого CAN сообщения
 
-#define DEBUG_COMS 0
+#define DEBUG_COMS 0 // Флаг отладки для вывода отладочной информации (0 - выключен)
 
-/// @brief Extract Node Id, Node msg and Error bit from 11bit can ID frame
-/// @param canId 11 bit can ID frame
+/// @brief Извлекает ID узла, ID сообщения узла и бит ошибки из 11-битного CAN ID кадра
+/// @param canId 11-битный CAN ID кадр
 void Extract_from_CAN_ID(unsigned int canId)
 {
-    // Extracting ID2 (first 4 MSB)
+    // Извлечение ID узла (первые 4 старших бита)
     unsigned int ID2 = (canId >> 7) & 0xF;
 
-    // Extracting CAN Command (next 6 bits)
+    // Извлечение CAN команды (следующие 6 бит)
     unsigned int canCommand = (canId >> 1) & 0x3F;
 
-    // Extracting Error Bit (last bit)
+    // Извлечение бита ошибки (последний бит)
     unsigned int errorBit = canId & 0x1;
 }
 
-/// @brief Combine Node_ID, Command_ID and Error into standard 11 bit CAN ID
-/// @param Node_ID
-/// @param Command_ID
-/// @param errorBit
-/// @return standard 11 bit CAN ID
+/// @brief Объединяет ID_узла, ID_команды и бит_ошибки в стандартный 11-битный CAN ID
+/// @param Node_ID ID узла
+/// @param Command_ID ID команды
+/// @param errorBit бит ошибки
+/// @return стандартный 11-битный CAN ID
 unsigned int Combine_2_CAN_ID(unsigned int Node_ID, unsigned int Command_ID, bool errorBit)
 {
-    // Combine components into an 11-bit CAN ID
+    // Объединение компонентов в 11-битный CAN ID
     unsigned int canId = 0;
 
-    // Add ID2 (first 4 MSB)
+    // Добавление ID узла (первые 4 старших бита)
     canId |= (Node_ID & 0xF) << 7;
 
-    // Add CAN Command (next 6 bits)
+    // Добавление CAN команды (следующие 6 бит)
     canId |= (Command_ID & 0x3F) << 1;
 
-    // Add Error Bit (last bit)
+    // Добавление бита ошибки (последний бит)
     canId |= (errorBit & 0x1);
 
     return canId;
 }
 
-/// @brief  Setup CAN bus hardware
+/// @brief Настройка аппаратной части шины CAN
 void Setup_CAN_bus()
 {
-    bool ret = CANInit(CAN_1000KBPS, 2);
-    if (!ret)
-        while (true)
+    bool ret = CANInit(CAN_1000KBPS, 2); // Инициализация CAN с битрейтом 1000 кбит/с и схемой подключения 2
+    if (!ret) // Если инициализация не удалась
+        while (true) // Зависаем в бесконечном цикле
             ;
 }
 
-/// @brief CAN protocol
-/// @param Serialport
+/// @brief Протокол обработки CAN сообщений
+/// @param Serialport ссылка на объект последовательного порта для отладки
 void CAN_protocol(Stream &Serialport)
 {
 
-    if (CANMsgAvail(1))
+    if (CANMsgAvail(1)) // Проверяем наличие сообщений в CAN1
     {
 
-        /// Get CAN msg from buffer
+        /// Получить CAN сообщение из буфера
         CANReceive(1, &CAN_RX_msg);
-        /// Unpack CAN ID
-        unsigned int Node_ID = (CAN_RX_msg.id >> 7) & 0xF;
-        unsigned int Command_ID = (CAN_RX_msg.id >> 1) & 0x3F;
-        unsigned int Error_bit = CAN_RX_msg.id & 0x1;
+        /// Распаковать CAN ID
+        unsigned int Node_ID = (CAN_RX_msg.id >> 7) & 0xF; // ID узла
+        unsigned int Command_ID = (CAN_RX_msg.id >> 1) & 0x3F; // ID команды
+        unsigned int Error_bit = CAN_RX_msg.id & 0x1; // Бит ошибки
 
-        /// Print CAN data
+        /// Вывести данные CAN (только в режиме отладки)
         #if (DEBUG_COMS > 0)
                 Serialport.print("Node ID: ");
                 Serialport.println(Node_ID);
@@ -107,36 +108,38 @@ void CAN_protocol(Stream &Serialport)
                 Serialport.println("");
         #endif
 
-        // If node ID matches the ID of
+        // Если ID узла соответствует запрашиваемому ID захвата (Comp_gripper.commanded_ID)
         if (Node_ID == Comp_gripper.commanded_ID)
         {
 
-            // Perform action depending on command ID we received FROM the gripper!
+            // Выполнить действие в зависимости от ID команды, полученной ОТ захвата!
             switch (Command_ID)
             {
-            case 60:
-            { // Gripper data pack
+            case 60: // Пакет данных от захвата (Gripper data pack)
+            {
 
-                if (CAN_RX_msg.len == 4)
+                if (CAN_RX_msg.len == 4) // Проверяем длину пакета (ожидаем 4 байта)
                 {
 
-                    /// Position 1 byte
-                    /// Current 2 byte
-                    /// 1 byte:
-                    ///  bit 0 - gripper activate (1) / deactivated (0)
-                    ///  bit 1 Gripper action status - 1 is goto, 0 is idle or performing auto release or in calibration)
-                    ///  object detection bit 2 and 3 -
-                    ///  bit 4 - gripper temperature error
-                    ///  bit 5 - gripper timeout error
-                    ///  bit 6 - gripper estop error
-                    ///  bit 7 - gripper calibration status; calibrated (1) / not calibrated (0)
-                    Comp_gripper.current_position = CAN_RX_msg.data[0];
+                    /// Структура данных:
+                    /// Позиция - 1 байт
+                    /// Ток - 2 байта
+                    /// 1 байт состояния:
+                    ///  бит 0 - захват активирован (1) / деактивирован (0)
+                    ///  бит 1 - статус действия захвата - 1 (перемещение), 0 (бездействие, автоотпускание или калибровка)
+                    ///  биты 2 и 3 - обнаружение объекта
+                    ///  бит 4 - ошибка температуры захвата
+                    ///  бит 5 - ошибка таймаута захвата
+                    ///  бит 6 - ошибка аварийной остановки (E-Stop) захвата
+                    ///  бит 7 - статус калибровки захвата; откалиброван (1) / не откалиброван (0)
+
+                    Comp_gripper.current_position = CAN_RX_msg.data[0]; // Текущая позиция
                     uint8_t temp_buffer[] = {CAN_RX_msg.data[1], CAN_RX_msg.data[2]};
-                    Comp_gripper.current_current = two_bytes_to_int(temp_buffer); // current setpoint
+                    Comp_gripper.current_current = two_bytes_to_int(temp_buffer); // Текущее значение тока (уставка)
                     //bool bitArray[8];
-                    //byteToBitsBigEndian(CAN_RX_msg.data[3], bitArray);
-                    Comp_gripper.current_status = CAN_RX_msg.data[3];
-                    #if (DEBUG_COMS > 0)
+                    //byteToBitsBigEndian(CAN_RX_msg.data[3], bitArray); // Распаковать биты состояния (альтернативный метод)
+                    Comp_gripper.current_status = CAN_RX_msg.data[3]; // Байт состояния
+                    #if (DEBUG_COMS > 0) // Отладочный вывод
                     Serialport.print("Position is:");
                     Serialport.println(Comp_gripper.current_position);
                     Serialport.print("Current is:");
@@ -149,19 +152,20 @@ void CAN_protocol(Stream &Serialport)
                 }
                 break;
             }
+            // ... здесь могут быть другие case для других команд ...
             }
         }else{
             #if (DEBUG_COMS > 0)
-            Serialport.print("Wrong ID");
+            Serialport.print("Wrong ID"); // Получено сообщение с неправильным ID узла
             #endif
         }
     }
 }
 
-/// @brief Griper calib; direction: Mainboard -> Gripper 
+/// @brief Отправка команды калибровки захвата; направление: Основная плата -> Захват
 void Send_gripper_cal()
 {
-
+    // Формирование пустого сообщения калибровки (все данные 0)
     CAN_TX_msg.data[0] = 0x00;
     CAN_TX_msg.data[1] = 0x00;
     CAN_TX_msg.data[2] = 0x00;
@@ -170,65 +174,51 @@ void Send_gripper_cal()
     CAN_TX_msg.data[5] = 0x00;
     CAN_TX_msg.data[6] = 0x00;
     CAN_TX_msg.data[7] = 0x00;
-    CAN_TX_msg.len = 0;
-    CAN_TX_msg.type = DATA_FRAME;
-    CAN_TX_msg.format = STANDARD_FORMAT;
+    CAN_TX_msg.len = 0; // Длина данных 0
+    CAN_TX_msg.type = DATA_FRAME; // Тип: кадр данных
+    CAN_TX_msg.format = STANDARD_FORMAT; // Формат: стандартный (11 бит)
+    // Формирование CAN ID: ID узла + команда 62 (калибровка) + бит ошибки 0
     CAN_TX_msg.id = Combine_2_CAN_ID(Comp_gripper.commanded_ID, 62, 0);
-    CANSend(1, &CAN_TX_msg);
+    CANSend(1, &CAN_TX_msg); // Отправка через CAN1
 }
 
 
-/// @brief Send Gripper packet; direction: Mainboard -> Gripper 
+/// @brief Отправка пакета управления захватом; направление: Основная плата -> Захват
 void Send_gripper_pack()
 {
-    // pos setpoint 1 byte
-    // speed setpoint 1 byte
-    // current setpoint 2 byte
-    // data 4 bits: activated, action_status, estop_status, relese_dir
+    // Структура данных (5 байт):
+    // pos setpoint - 1 байт (заданная позиция)
+    // speed setpoint - 1 байт (заданная скорость)
+    // current setpoint - 2 байта (заданный ток)
+    // data - 4 бита: activated, action_status, estop_status, relese_dir (состояние и команды)
+
     byte data_buffer_send[2];
-    intTo2Bytes(Comp_gripper.commanded_current, data_buffer_send);
+    intTo2Bytes(Comp_gripper.commanded_current, data_buffer_send); // Преобразование тока в 2 байта
     bool bitArray[8];
-    byteToBitsBigEndian(Comp_gripper.command, bitArray);
-    CAN_TX_msg.data[0] = Comp_gripper.commanded_position;
-    CAN_TX_msg.data[1] = Comp_gripper.commanded_speed;
-    CAN_TX_msg.data[2] = data_buffer_send[0];
-    CAN_TX_msg.data[3] = data_buffer_send[1];
-    CAN_TX_msg.data[4] = bitsToByte(bitArray);
-    CAN_TX_msg.data[5] = 0x00;
+    byteToBitsBigEndian(Comp_gripper.command, bitArray); // Распаковка командного байта в биты
+
+    // Заполнение полей сообщения
+    CAN_TX_msg.data[0] = Comp_gripper.commanded_position; // Заданная позиция
+    CAN_TX_msg.data[1] = Comp_gripper.commanded_speed; // Заданная скорость
+    CAN_TX_msg.data[2] = data_buffer_send[0]; // Ток (байт 1)
+    CAN_TX_msg.data[3] = data_buffer_send[1]; // Ток (байт 2)
+    CAN_TX_msg.data[4] = bitsToByte(bitArray); // Байт состояния/команд
+    CAN_TX_msg.data[5] = 0x00; // Неиспользуемые байты
     CAN_TX_msg.data[6] = 0x00;
     CAN_TX_msg.data[7] = 0x00;
-    CAN_TX_msg.len = 5;
-    CAN_TX_msg.type = DATA_FRAME;
-    CAN_TX_msg.format = STANDARD_FORMAT;
+    CAN_TX_msg.len = 5; // Длина полезных данных - 5 байт
+    CAN_TX_msg.type = DATA_FRAME; // Тип: кадр данных
+    CAN_TX_msg.format = STANDARD_FORMAT; // Формат: стандартный (11 бит)
+    // Формирование CAN ID: ID узла + команда 61 (управление) + бит ошибки 0
     CAN_TX_msg.id = Combine_2_CAN_ID(Comp_gripper.commanded_ID, 61, 0);
-    CANSend(1, &CAN_TX_msg);
+    CANSend(1, &CAN_TX_msg); // Отправка через CAN1
 }
 
 
-/// @brief Send Gripper packet empty; direction: Mainboard -> Gripper 
+/// @brief Отправка пустого пакета управления захватом; направление: Основная плата -> Захват
 void Send_gripper_pack_empty()
 {
-
-    CAN_TX_msg.data[0] = 0x00;;
-    CAN_TX_msg.data[1] = 0x00;
-    CAN_TX_msg.data[2] = 0x00;
-    CAN_TX_msg.data[3] = 0x00;
-    CAN_TX_msg.data[4] = 0x00;
-    CAN_TX_msg.data[5] = 0x00;
-    CAN_TX_msg.data[6] = 0x00;
-    CAN_TX_msg.data[7] = 0x00;
-    CAN_TX_msg.len = 0;
-    CAN_TX_msg.type = DATA_FRAME;
-    CAN_TX_msg.format = STANDARD_FORMAT;
-    CAN_TX_msg.id = Combine_2_CAN_ID(Comp_gripper.commanded_ID, 61, 0);
-    CANSend(1, &CAN_TX_msg);
-}
-
-
-
-/// @brief Clear error; direction: Mainboard -> Gripper 
-void Send_clear_error()
-{
+    // Формирование пустого сообщения управления (все данные 0)
     CAN_TX_msg.data[0] = 0x00;
     CAN_TX_msg.data[1] = 0x00;
     CAN_TX_msg.data[2] = 0x00;
@@ -237,9 +227,32 @@ void Send_clear_error()
     CAN_TX_msg.data[5] = 0x00;
     CAN_TX_msg.data[6] = 0x00;
     CAN_TX_msg.data[7] = 0x00;
-    CAN_TX_msg.len = 0;
-    CAN_TX_msg.type = DATA_FRAME;
-    CAN_TX_msg.format = STANDARD_FORMAT;
+    CAN_TX_msg.len = 0; // Длина данных 0
+    CAN_TX_msg.type = DATA_FRAME; // Тип: кадр данных
+    CAN_TX_msg.format = STANDARD_FORMAT; // Формат: стандартный (11 бит)
+    // Формирование CAN ID: ID узла + команда 61 (управление) + бит ошибки 0
+    CAN_TX_msg.id = Combine_2_CAN_ID(Comp_gripper.commanded_ID, 61, 0);
+    CANSend(1, &CAN_TX_msg); // Отправка через CAN1
+}
+
+
+
+/// @brief Отправка команды сброса ошибок; направление: Основная плата -> Захват
+void Send_clear_error()
+{
+    // Формирование пустого сообщения сброса ошибок (все данные 0)
+    CAN_TX_msg.data[0] = 0x00;
+    CAN_TX_msg.data[1] = 0x00;
+    CAN_TX_msg.data[2] = 0x00;
+    CAN_TX_msg.data[3] = 0x00;
+    CAN_TX_msg.data[4] = 0x00;
+    CAN_TX_msg.data[5] = 0x00;
+    CAN_TX_msg.data[6] = 0x00;
+    CAN_TX_msg.data[7] = 0x00;
+    CAN_TX_msg.len = 0; // Длина данных 0
+    CAN_TX_msg.type = DATA_FRAME; // Тип: кадр данных
+    CAN_TX_msg.format = STANDARD_FORMAT; // Формат: стандартный (11 бит)
+    // Формирование CAN ID: ID узла + команда 1 (сброс ошибок) + бит ошибки 0
     CAN_TX_msg.id = Combine_2_CAN_ID(Comp_gripper.commanded_ID, 1, 0);
-    CANSend(1, &CAN_TX_msg);
+    CANSend(1, &CAN_TX_msg); // Отправка через CAN1
 }

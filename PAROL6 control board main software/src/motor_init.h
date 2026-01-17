@@ -1,9 +1,9 @@
-/** @file motor_init.h
-    @brief A Documented file.
+/** @file motor_init.h (заголовочный файл motor_init.h)
+    @brief Документированный файл.
     
-    Header file of motor initialization.
-    For schematic please refer to:
-    For additional pin functionality refer to:
+    Заголовочный файл инициализации двигателей.
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
 
 */
 
@@ -15,8 +15,9 @@
 #include "common.h"
 #include "iodefs.h"
 #include "constants.h"
-/// HERE INIT STRUCTURES??
+/// ЗДЕСЬ ИНИЦИАЛИЗИРУЕМ СТРУКТУРЫ?? (HERE INIT STRUCTURES??)
 
+/* Прототипы функций для инициализации структур двигателей/суставов */
 
 void Init_motor_struct(struct MotorStruct *Joint__);
 void Init_Joint_1(struct MotorStruct *Joint__);
@@ -27,4 +28,4 @@ void Init_Joint_5(struct MotorStruct *Joint__);
 void Init_Joint_6(struct MotorStruct *Joint__);
 
 
-#endif
+#endif /* MOTOR_INIT */

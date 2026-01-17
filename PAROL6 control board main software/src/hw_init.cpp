@@ -1,9 +1,9 @@
-/** @file hw_init.cpp
-    @brief A Documented file.
+/** @file hw_init.cpp (файл реализации hw_init.cpp)
+    @brief Документированный файл.
     
-    Source file of hardware initialization.
-    For schematic please refer to:
-    For additional pin functionality refer to:
+    Исходный файл аппаратной инициализации.
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
 
 */
 
@@ -11,12 +11,13 @@
 #include "iodefs.h"
 #include <Arduino.h>
 
-/// Define all ADC pins
-/// Pins for DC bus measurment and termistor
+/// Определить все пины АЦП
+/// Пины для измерения напряжения шины постоянного тока и термистора
 void ADC_piins(void){
 
 }
 
+/// Инициализация всех цифровых входов
 void Init_Digital_Inputs(void){
 
     pinMode(LIMIT1, INPUT);
@@ -36,6 +37,7 @@ void Init_Digital_Inputs(void){
 
 }
 
+/// Инициализация всех цифровых выходов
 void Init_Digital_Outputs(void){
 
     pinMode(PUL1, OUTPUT);
@@ -63,24 +65,27 @@ void Init_Digital_Outputs(void){
     pinMode(GLOBAL_ENABLE, OUTPUT);
 
 
-    pinMode(OUTPUT1, OUTPUT); 
-    pinMode(OUTPUT2, OUTPUT); 
+    pinMode(OUTPUT1, OUTPUT);
+    pinMode(OUTPUT2, OUTPUT);
 
-    pinMode(LED1, OUTPUT); 
-    pinMode(LED2, OUTPUT); 
+    pinMode(LED1, OUTPUT);
+    pinMode(LED2, OUTPUT);
 
-    pinMode(SUPPLY_ON_OFF, OUTPUT); 
+    pinMode(SUPPLY_ON_OFF, OUTPUT);
 
 }
 
+/// Инициализация интерфейса SPI (пока пустая реализация)
 void Init_SPI(void){
 
 }
 
+/// Инициализация интерфейса CAN (пока пустая реализация)
 void Init_CAN(void){
 
 }
 
+/// Инициализация обработчиков прерываний (ISR) для ложных срабатываний концевых выключателей
 void Init_False_Trigger_ISR(){
   attachInterrupt(LIMIT1, False_Swtich_Trigger_1, FALLING);
   attachInterrupt(LIMIT2, False_Swtich_Trigger_2, RISING);
@@ -91,10 +96,10 @@ void Init_False_Trigger_ISR(){
 }
 
 
-/// Enable false trigger ISR
+/// Включение ISR для ложных срабатываний (прототип, реализация отсутствует)
 void Enable_False_Trigger_ISR();
-/// Disable false trigger ISR
 
+/// Отключение ISR для ложных срабатываний
 void Disable_False_Trigger_ISR(){
   detachInterrupt(LIMIT1);
   detachInterrupt(LIMIT2);
@@ -104,36 +109,43 @@ void Disable_False_Trigger_ISR(){
   detachInterrupt(LIMIT6);
 
 }
-/// ISR callback functions for limit switches
+
+/* Обработчики прерываний (ISR) для концевых выключателей */
+
+/// @brief ISR для ложного срабатывания концевого выключателя 1
 void False_Swtich_Trigger_1(void){
-    // neki error flag digni 
+    // поднять какой-нибудь флаг ошибки (neki error flag digni)
 
 }
 
+/// @brief ISR для ложного срабатывания концевого выключателя 2
 void False_Swtich_Trigger_2(void){
 
 }
 
+/// @brief ISR для ложного срабатывания концевого выключателя 3
 void False_Swtich_Trigger_3(void){
 
 }
 
+/// @brief ISR для ложного срабатывания концевого выключателя 4
 void False_Swtich_Trigger_4(void){
 
 }
 
+/// @brief ISR для ложного срабатывания концевого выключателя 5
 void False_Swtich_Trigger_5(void){
 
 }
 
+/// @brief ISR для ложного срабатывания концевого выключателя 6
 void False_Swtich_Trigger_6(void){
 
 }
 
 
 
-
-
+/// Инициализация всей аппаратной части
 void Init_ALL_HW(void){
 
     Init_Digital_Inputs();

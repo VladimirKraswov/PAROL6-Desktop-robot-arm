@@ -1,12 +1,15 @@
-## Setup leap motion
+#### **Настройка Leap Motion**
 
-* install python 3.8
-* install https://github.com/ano0002/Leap-Motion-Python-3.8
-* install this sdk: https://leap2.ultraleap.com/gemini-downloads/ legacy downloads 3.2
+1.  **Установите Python 3.8.**
+2.  **Установите совместимую библиотеку для Python:** `https://github.com/ano0002/Leap-Motion-Python-3.8`
+3.  **Установите этот драйвер SDK:** `https://leap2.ultraleap.com/gemini-downloads/` (в разделе "Legacy downloads" выберите версию **3.2**).
 
-## Setup parol6
+#### **Настройка PAROL6**
 
-* Run the PAROL6_LEAP_comms_LEAP.py
-* press h to home the robot
-* after that press j to go to start position
-* NOTE you can always stop the robot with the estop. if stopped that way you need to release the estop and press e on keyboard
+1.  **Запустите скрипт:** `PAROL6_LEAP_comms_LEAP.py`
+2.  **Нажмите `h`** на клавиатуре, чтобы робот выполнил процедуру "**гоминг**" (поиск начального положения).
+3.  **После этого нажмите `j`**, чтобы робот перешёл в **стартовую позицию** для работы с Leap Motion.
+4.  **ВАЖНОЕ ПРИМЕЧАНИЕ:** Вы всегда можете **экстренно остановить робота с помощью кнопки аварийной остановки (E-Stop)**. Если вы остановили его таким способом, вам нужно будет **сперва отпустить (разблокировать) кнопку E-Stop**, а затем **нажать клавишу `e` на клавиатуре**, чтобы перезапустить управление.
+
+### 💡 Краткая суть процесса
+Эта документация описывает, как подключить контроллер движений **Leap Motion** для жестового управления роботом-манипулятором. После настройки программного обеспечения и драйверов робот будет зеркально повторять движения вашей руки в пространстве, которые отслеживает сенсор Leap Motion.

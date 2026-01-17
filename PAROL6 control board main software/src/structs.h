@@ -1,163 +1,190 @@
-/** @file common.h
-    @brief A Documented file.
+/** @file common.h (заголовочный файл common.h) - Внимание: Похоже, имя файла должно быть structs.h на основе содержимого.
+    @brief Документированный файл.
 
-    Here declare structs for the stuff that will change all the time and is called by multiple instances
-    Ex: motor coms struct --> stuff that we receive from USB
-    For schematic please refer to:
-    For additional pin functionality refer to:
+    Здесь объявляются структуры для данных, которые часто меняются и используются в нескольких модулях.
+    Пример: структура связи с мотором --> данные, которые мы получаем по USB.
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
 
 */
 
 #ifndef STRUCTS
 #define STRUCTS
 
-/// Put all declarations of pins and stuff like that that is specific to the motors
-/// That way they can all be addressed thru indexing?
+/// Разместить все объявления выводов и подобных вещей, специфичных для двигателей,
+/// чтобы к ним можно было обращаться через индексацию?
+
+/**
+ * @brief Структура, описывающая состояние и параметры одного двигателя/сустава робота.
+ */
 struct MotorStruct
 {
 
-  /// @brief maximum motor current. Rated as RMS current by stepper manufacturer
+  /// @brief Максимальный ток двигателя. Указывается производителем как среднеквадратичное значение (RMS current by stepper manufacturer)
   int motor_max_current = 100;
-  /// @brief  Speed at what motor homes
+  /// @brief Скорость двигателя при поиске начального положения (гоминге)
   int homing_speed = 100;
 
-  /// @brief Max speed of the motor
+  /// @brief Максимальная скорость двигателя
   int motor_max_speed = 0;
-  /// @brief maximum motor acceleration
+  /// @brief Максимальное ускорение двигателя
   int motor_max_acceleration = 0;
-  /// @brief minimum motor acceleration
+  /// @brief Минимальная скорость двигателя
   int motor_min_speed = 0;
-  /// @brief  minimum motor acceleration
+  /// @brief Минимальное ускорение двигателя
   int motor_min_acceleration = 0;
 
-  /// @brief robot joint range in positive direction (in radians)
+  /// @brief Диапазон движения робота в положительном направлении (в радианах)
   float joint_range_positive;
-  /// @brief robot joint range in negative direction (in radians)
+  /// @brief Диапазон движения робота в отрицательном направлении (в радианах)
   float joint_range_negative;
 
-  /// @brief robot joint range in positive direction in steps (changes with microstep setting)
+  /// @brief Диапазон движения робота в положительном направлении в шагах (зависит от настройки микрошага)
   float joint_range_positive_steps;
-  /// @brief robot joint range in negative direction (changes with microstep setting)
+  /// @brief Диапазон движения робота в отрицательном направлении в шагах (зависит от настройки микрошага)
   float joint_range_negative_steps;
 
-  /// @brief standby position of the robot
+  /// @brief Позиция ожидания робота
   int standby_position;
-  /// @brief how much steeps need to be made from when limit is hit to standby position
+  /// @brief Количество шагов от момента срабатывания концевика до позиции ожидания
   float homed_position;
-  /// @brief is the joint homed or not? homed is when full procedure is done
+  /// @brief Прошел ли сустав процедуру гоминга? homed = 1, когда вся процедура завершена.
   int homed;
-  /// @brief is the joint currently homing?
+  /// @brief Выполняется ли в данный момент гоминг для этого сустава?
   int homing;
-  /// @brief  stage 1 of homing
+  /// @brief Этап 1 процедуры гоминга
   int homing_stage_1 = 0;
-  /// @brief  stage 2 of homing
+  /// @brief Этап 2 процедуры гоминга
   int homing_stage_2 = 0;
 
-  /// @brief temperature error flag
+  /// @brief Флаг ошибки температуры
   int temperature_error;
-  /// @brief temperature warrning flag
+  /// @brief Флаг предупреждения о температуре
   int temperature_warrning;
 
-  /// @brief microstep value used
+  /// @brief Используемое значение микрошага
   int microstep;
-  /// @brief at what state is limit switch when triggered
+  /// @brief Уровень сигнала, при котором срабатывает концевой выключатель
   int limit_switch_trigger;
 
-  /// @brief reduction ratio used in joint
+  /// @brief Передаточное отношение редуктора, используемое в суставе
   float reduction_ratio;
 
-  /// @brief current position of the joint
+  /// @brief Текущая позиция сустава
   long position;
-  /// @brief current speed of the joint
+  /// @brief Текущая скорость сустава
   int speed;
-  /// @brief current current of the joint
+  /// @brief Текущий ток сустава
   int current;
 
-  /// @brief  limit switch pin of the joint
+  /// @brief Пин подключения концевика сустава
   int LIMIT;
-  /// @brief  direction pin of the joint
+  /// @brief Пин направления вращения сустава
   int DIR;
-  /// @brief step pin of the joint
+  /// @brief Пин шага (импульса) сустава
   int STEP;
-  /// @brief SPI select pin of the joint
+  /// @brief Пин выбора (CS) на шине SPI для драйвера этого сустава
   int SELECT;
-  /// @brief what driver is controlling this motor
+  /// @brief Какой драйвер управляет этим двигателем?
   int driver_chip_on_board;
-  /// @brief is the robot moving in the right direction?
+  /// @brief Двигается ли робот в правильном направлении? (направление инвертировано?)
   int direction_reversed;
 
-  /// @brief scale factor for holding current based on set rms current
-  /// max value is 31 but of the available current defined by sense resistor in driver datasheet
+  /// @brief Коэффициент масштабирования для тока удержания на основе заданного RMS тока.
+  /// Максимальное значение 31, но ограничено доступным током, определяемым резистором считывания (sense resistor) в соответствии с даташитом драйвера.
   int ihold;
-  /// @brief scale factor for running current based on set rms current
-  /// max value is 31 but of the available current defined by sense resistor in driver datasheet
+  /// @brief Коэффициент масштабирования для рабочего тока на основе заданного RMS тока.
+  /// Максимальное значение 31, но ограничено доступным током, определяемым резистором считывания (sense resistor) в соответствии с даташитом драйвера.
   int irun;
-  /// @brief sets how much curret is scaled when motors are holding position (should be čles then 1, usually 0.95)
+  /// @brief Устанавливает, насколько масштабируется ток, когда двигатели удерживают позицию (должно быть меньше 1, обычно 0.95)
   float hold_multiplier;
 
-  /// @brief pre over temperature warning, recomend to reduce current or somehow cool the drivers
+  /// @brief Предупреждение о перегреве, рекомендуется уменьшить ток или как-то охладить драйверы.
   int over_temp_pre_warning;
-  /// @brief over temperature warning, drivers get disabled. (should never happen, dangerous)
+  /// @brief Предупреждение о перегреве, драйверы отключаются. (Этого никогда не должно происходить, опасно)
   int over_temp_warning;
-  /// @brief TODO check this
+  /// @brief TODO проверить это (диагностический вывод 0 драйвера)
   int diag0;
-  /// @brief nothing connected on phase B
+  /// @brief Ничего не подключено к фазе B (обрыв цепи)
   int open_load_B;
-  /// @brief nothing connected on phase A
+  /// @brief Ничего не подключено к фазе A (обрыв цепи)
   int open_load_A;
-  /// @brief Short on phase B
+  /// @brief Короткое замыкание на землю фазы B
   int short_2_gnd_B;
-  /// @brief Short on phase A
+  /// @brief Короткое замыкание на землю фазы A
   int short_2_gnd_A;
 
+  /// @brief Командный режим работы (полученный от управления)
   int commaned_mode;
+  /// @brief Заданная позиция (полученная от управления)
   int commanded_position;
+  /// @brief Заданная скорость (полученная от управления)
   int commanded_velocity;
+  /// @brief Заданный ток (полученный от управления)
   int commanded_current;
 
-  /// @brief Robot tried to go to position it is not allowed to go
+  /// @brief Робот пытался переместиться в позицию, в которую ему не разрешено двигаться.
   int position_error = 0;
 
+  /// @brief Общий флаг ошибки для сустава
   int error;
 };
 
-/// @brief general robot data
+/**
+ * @brief Общие данные о состоянии робота.
+ */
 struct Robot
 {
-
+  /// @brief Идентификатор CAN шины для робота
   int CAN_ID;
-  int CRC_value = 212;  
+  /// @brief Значение CRC для проверки целостности данных
+  int CRC_value = 212;
+  /// @brief Текущая команда, выполняемая роботом
   int command;
+  /// @brief Сустав, на который направлена текущая команда
   int affected_joint;
+  /// @brief Заданное состояние цифрового выхода 1 (отправлено с ПК)
   int commanded_OUT1;
+  /// @brief Заданное состояние цифрового выхода 2 (отправлено с ПК)
   int commanded_OUT2;
+  /// @brief Текущее состояние цифрового входа 1 (считано с пина)
   int In1;
+  /// @brief Текущее состояние цифрового входа 2 (считано с пина)
   int In2;
+  /// @brief Текущее состояние цифрового выхода 1 (отправлено на пин)
   int Out1;
+  /// @brief Текущее состояние цифрового выхода 2 (отправлено на пин)
   int Out2;
+  /// @brief Текущее состояние кнопки аварийной остановки (считано с пина)
   int Estop;
+  /// @brief Время, прошедшее между двумя последовательными командами с ПК (в тиках таймера)
   unsigned int time_between_commands = 0;
+  /// @brief Заданное состояние выхода 1 (возможно, дублирует commanded_OUT1)
   int Out1_commanded;
+  /// @brief Заданное состояние выхода 2 (возможно, дублирует commanded_OUT2)
   int Out2_commanded;
+  /// @brief Дополнительный байт данных для расширения функциональности
   int xtr2_byte = 8;
-  /// @brief  Timeout represents time passed between 2 commands sent from PC
-  /// 255 = 255ms, If we set it to 200 and 200ms passes between 2 commands 
-  /// robot goes to timeout error. If set to 0 it is disabled
-  /// it is sent from the PC to the robot to set it
+  /// @brief Таймаут представляет время, прошедшее между двумя командами, отправленными с ПК.
+  /// 255 = 255 мс. Если установлено значение 200 и между двумя командами прошло 200 мс,
+  /// робот переходит в состояние ошибки таймаута. Если установлено в 0, функция отключена.
+  /// Это значение отправляется с ПК на робота для его настройки.
   int Timeout = 0;
-  /// @brief  Represents if the robots timeout is triggered or not
-  /// Robot sends this 
-  int timeout_error = 100; 
+  /// @brief Указывает, сработал ли таймаут робота или нет.
+  /// Робот отправляет этот флаг обратно на ПК.
+  int timeout_error = 100;
+  /// @brief Сустав, на который направлена команда (возможно, дублирует affected_joint)
   int Affected_joint;
+  /// @brief Флаг отключения робота (1 - отключен, 0 - включен)
   int disabled = 0;
-
-
 };
 
-/// @brief All commanded and current data for the gripper
+/**
+ * @brief Все заданные и текущие данные для захвата (гриппера).
+ */
 struct Gripper
 {
-  /// @brief data that is being sent from the gripper to the robot
+  /// @brief Данные, которые отправляются от захвата к роботу (текущее состояние).
   int current_position = 0;
   int current_speed = 1;
   int current_current = 2;
@@ -165,7 +192,7 @@ struct Gripper
   int object_detection = 1;
   int Gripper_ID = 0;
 
-  /// @brief data that is being sent from the robot to the gripper
+  /// @brief Данные, которые отправляются от робота к захвату (команды).
   int commanded_position = 0;
   int commanded_speed = 0;
   int commanded_current = 0;
@@ -173,18 +200,21 @@ struct Gripper
   int mode;
   int commanded_ID;
 
-  int prev_commanded_position ;
-  int prev_commanded_speed ;
-  int prev_commanded_current ;
-  int prev_command ;
+  /// @brief Предыдущие значения команд (для отслеживания изменений и минимизации трафика).
+  int prev_commanded_position;
+  int prev_commanded_speed;
+  int prev_commanded_current;
+  int prev_command;
   int prev_mode;
   int prev_commanded_ID;
-
-
 };
 
+/* Внешнее объявление глобального экземпляра структуры захвата.
+   Определение (выделение памяти) должно быть в одном из .cpp файлов (например, main.cpp).
+*/
 extern Gripper Comp_gripper;
 
+/* Зарезервированные структуры для будущего использования или не полностью реализованные. */
 struct data_send
 {
 };
@@ -193,4 +223,4 @@ struct CommsStruct
 {
 };
 
-#endif
+#endif /* STRUCTS */

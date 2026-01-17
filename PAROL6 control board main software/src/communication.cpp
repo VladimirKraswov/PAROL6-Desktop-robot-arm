@@ -1,8 +1,8 @@
-/** @file communication.cpp
-    @brief A Documented file.
+/** @file communication.cpp (файл реализации communication.cpp)
+    @brief Документированный файл.
     
-    Source file for communications code
-    For schematic please refer to:
-    For additional pin functionality refer to:
+    Исходный файл для кода связи (коммуникаций).
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
 
 */

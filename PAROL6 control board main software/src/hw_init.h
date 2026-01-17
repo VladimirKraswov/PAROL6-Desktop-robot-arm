@@ -1,9 +1,9 @@
-/** @file hw_init.h
-    @brief A Documented file.
+/** @file hw_init.h (заголовочный файл hw_init.h)
+    @brief Документированный файл.
     
-    Header file of hardware initialization.
-    For schematic please refer to:
-    For additional pin functionality refer to:
+    Заголовочный файл аппаратной инициализации.
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
 
 */
 
@@ -13,32 +13,42 @@
 #include <Arduino.h>
 #include <stdio.h>
 
-/// Initialize all ADC pins
+/* Прототипы функций для настройки аппаратной части */
+
+/// Инициализировать все пины АЦП (Initialize all ADC pins)
 void Init_ADC (void);
-/// Initialize USB port
+/// Инициализировать USB порт (Initialize USB port)
 void Init_USB(void);
-/// Initialize digital input pins
+/// Инициализировать пины цифровых входов (Initialize digital input pins)
 void Init_Digital_Inputs(void);
-/// Initialize digital output pins
+/// Инициализировать пины цифровых выходов (Initialize digital output pins)
 void Init_Digital_Outputs(void);
-/// Initialize SPI 
+/// Инициализировать SPI (Initialize SPI)
 void Init_SPI(void);
-/// Initialize CAN
+/// Инициализировать CAN (Initialize CAN)
 void Init_CAN(void);
-/// Initialize all hardware 
+/// Инициализировать всю аппаратную часть (Initialize all hardware)
 void Init_ALL_HW(void);
-/// Initialize false trigger ISR
+/// Инициализировать ISR для ложных срабатываний (Initialize false trigger ISR)
 void Init_False_Trigger_ISR();
-/// Enable false trigger ISR
+/// Включить ISR для ложных срабатываний (Enable false trigger ISR)
 void Enable_False_Trigger_ISR();
-/// Disable false trigger ISR
+/// Отключить ISR для ложных срабатываний (Disable false trigger ISR)
 void Disable_False_Trigger_ISR();
-/// ISR callback functions for limit switches
+
+/* Обработчики прерываний (ISR) для концевых выключателей */
+
+/// @brief Обработчик прерывания для концевого выключателя 1
 void False_Swtich_Trigger_1(void);
+/// @brief Обработчик прерывания для концевого выключателя 2
 void False_Swtich_Trigger_2(void);
+/// @brief Обработчик прерывания для концевого выключателя 3
 void False_Swtich_Trigger_3(void);
+/// @brief Обработчик прерывания для концевого выключателя 4
 void False_Swtich_Trigger_4(void);
+/// @brief Обработчик прерывания для концевого выключателя 5
 void False_Swtich_Trigger_5(void);
+/// @brief Обработчик прерывания для концевого выключателя 6
 void False_Swtich_Trigger_6(void);
 
-#endif
+#endif /* HW_SETUP_H */

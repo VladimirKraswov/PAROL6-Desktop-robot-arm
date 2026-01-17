@@ -1,23 +1,24 @@
-/* USER CODE BEGIN Header */
+/* ПОЛЬЗОВАТЕЛЬСКИЙ КОД: НАЧАЛО ЗАГОЛОВКА */
 /**
   ******************************************************************************
-  * @file    adc.h
-  * @brief   This file contains all the function prototypes for
-  *          the adc.c file
+  * @file    adc.h (заголовочный файл для АЦП)
+  * @brief   Этот файл содержит все прототипы функций для
+  *          файла adc.c
   ******************************************************************************
-  * @attention
+  * @attention (ВНИМАНИЕ)
   *
   * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
+  * Все права защищены.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Данное программное обеспечение лицензировано на условиях, которые можно найти в файле LICENSE
+  * в корневом каталоге этого программного компонента.
+  * Если файл LICENSE не поставляется с этим программным обеспечением, оно предоставляется "КАК ЕСТЬ".
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* ПОЛЬЗОВАТЕЛЬСКИЙ КОД: КОНЕЦ ЗАГОЛОВКА */
+
+/* Защита от рекурсивного включения (define для предотвращения рекурсивного включения) -------------------------------------*/
 #ifndef __ADC_H__
 #define __ADC_H__
 
@@ -26,21 +27,20 @@ extern "C" {
 #endif
 
 
-/* Includes ------------------------------------------------------------------*/
+/* Подключаемые файлы ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+/* Внешнее объявление (extern) дескриптора АЦП1 */
 extern ADC_HandleTypeDef hadc1;
 
+/* Прототипы функций */
 void MX_ADC1_Init(void);
-
 int ADC_CHANNEL_8_READ_BUS_VOLTAGE(void);
-
 void HAL_ADC_MspInit_(ADC_HandleTypeDef* adcHandle);
-
 int BUS_voltage(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* __ADC_H__ */
