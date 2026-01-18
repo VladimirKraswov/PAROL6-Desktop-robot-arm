@@ -1,0 +1,552 @@
+:root {
+    --primary: #2a6eff;
+    --primary-dark: #1a5ae8;
+    --secondary: #6c757d;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #e74c3c;
+    --border-radius: 12px;
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--dark);
+    background-color: #f5f7fb;
+    line-height: 1.6;
+}
+
+.navbar {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand i {
+    margin-right: 10px;
+    font-size: 1.8rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--dark);
+    margin: 0 10px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--primary);
+}
+
+.hero {
+    background: linear-gradient(135deg, #2a6eff 0%, #1a5ae8 100%);
+    color: white;
+    padding: 4rem 0 3rem;
+    border-radius: 0 0 40px 40px;
+    margin-bottom: 3rem;
+}
+
+.hero h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 1.2rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.pin-diagram {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.image-container {
+    position: relative;
+    margin: 1rem 0;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    border: 1px solid #e9ecef;
+    background: white;
+    cursor: grab;
+    user-select: none;
+}
+
+.image-container.grabbing {
+    cursor: grabbing;
+}
+
+.image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease-out;
+    transform-origin: 0 0;
+}
+
+.image-frame {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
+}
+
+.image-info {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: rgba(248, 249, 250, 0.5);
+}
+
+.table tbody td {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.pin-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0.2rem;
+}
+
+.pin-badge-direction {
+    background-color: rgba(42, 110, 255, 0.1);
+    color: var(--primary);
+}
+
+.pin-badge-enable {
+    background-color: rgba(0, 184, 148, 0.1);
+    color: var(--success);
+}
+
+.pin-badge-step {
+    background-color: rgba(253, 203, 110, 0.1);
+    color: #e67e22;
+}
+
+.pin-badge-uart {
+    background-color: rgba(155, 89, 182, 0.1);
+    color: #9b59b6;
+}
+
+.chip-info {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+}
+
+.chip-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-right: 1.5rem;
+}
+
+.chip-details h3 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.chip-details p {
+    color: var(--secondary);
+    margin-bottom: 0;
+}
+
+.section-title {
+    position: relative;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    padding-bottom: 0.75rem;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.image-switcher {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.image-switcher button {
+    flex: 1;
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.image-switcher button i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.image-switcher button.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 110, 255, 0.2);
+}
+
+.image-switcher button:not(.active):hover {
+    background-color: rgba(42, 110, 255, 0.05);
+    border-color: var(--primary);
+}
+
+.image-type-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.image-type-indicator .badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+}
+
+footer {
+    background: var(--dark);
+    color: white;
+    padding: 3rem 0 2rem;
+    margin-top: 3rem;
+}
+
+footer a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+footer a:hover {
+    color: white;
+}
+
+.copy-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.image-description {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.zoom-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--dark);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-controls button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.zoom-level {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--dark);
+    z-index: 20;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.zoom-level i {
+    color: var(--primary);
+}
+
+.hint-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    z-index: 15;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    animation: fadeOut 3s forwards;
+    pointer-events: none;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.hint-overlay i {
+    margin-right: 8px;
+    color: var(--primary);
+}
+
+.drag-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: var(--secondary);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 3rem 0 2rem;
+        border-radius: 0 0 30px 30px;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .chip-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .chip-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .image-container {
+        height: 400px;
+    }
+    
+    .zoom-controls {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .zoom-controls button {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .zoom-level {
+        top: 10px;
+        left: 10px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .image-container {
+        height: 300px;
+    }
+    
+    .image-switcher button {
+        min-width: 100%;
+    }
+}
+
+/* Добавьте в конец файла style.css */
+
+/* Стили для таблиц разъемов */
+.table-sm th, .table-sm td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Стили для списков разъемов */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Стили для секций интерфейсов */
+.card-header.bg-warning {
+    background-color: var(--warning) !important;
+    color: #333;
+}
+
+.card-header.bg-success {
+    background-color: var(--success) !important;
+    color: white;
+}
+
+/* Улучшенные стили для таблиц с пинами */
+.table tbody tr.table-info {
+    background-color: rgba(23, 162, 184, 0.1);
+}
+
+/* Стили для бейджей */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Адаптивные таблицы */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .table-sm th, .table-sm td {
+        padding: 0.3rem;
+        font-size: 0.8rem;
+    }
+}

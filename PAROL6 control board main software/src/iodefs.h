@@ -5,37 +5,44 @@
 
 // ============================================================
 // Шаговые драйверы (Step/Direction/CS для 6 осей робота)
+// Добавлены EN-пины для индивидуального включения драйверов (если нужно в прошивке; иначе закомментировать)
 // ============================================================
 
 // Ось 1 (соответствует step driver 0)
 #define PUL1    PE2    // STEP (step driver 0 - step(pe2))
 #define DIR1    PC5    // DIR (step driver 0 - dir (pc5))
 #define SELECT1 PC4    // CS (step driver 0 - cs/uart (pc4))
+// #define EN1     PF11   // EN (step driver 0 - en (pf11)) — включение драйвера, если требуется
 
 // Ось 2 (step driver 1)
 #define PUL2    PE3    // STEP (step driver 1 - step(pe3))
 #define DIR2    PF13   // DIR (step driver 1 - dir (pf13))
 #define SELECT2 PF12   // CS (step driver 1 - cs/uart (pf12))
+// #define EN2     PF14   // EN (step driver 1 - en (pf14))
 
 // Ось 3 (step driver 2)
 #define PUL3    PE4    // STEP (step driver 2 - step(pe4))
 #define DIR3    PG0    // DIR (step driver 2 - dir (pg0))
 #define SELECT3 PF15   // CS (step driver 2 - cs/uart (pf15))
+// #define EN3     PG1    // EN (step driver 2 - en (pg1))
 
 // Ось 4 (step driver 3)
 #define PUL4    PE14   // STEP (step driver 3 - step(pe14))
 #define DIR4    PE8    // DIR (step driver 3 - dir (pe8))
 #define SELECT4 PE7    // CS (step driver 3 - cs/uart (pe7))
+// #define EN4     PE9    // EN (step driver 3 - en (pe9))
 
 // Ось 5 (step driver 4)
 #define PUL5    PE15   // STEP (step driver 4 - step(pe15))
 #define DIR5    PE11   // DIR (step driver 4 - dir (pe11))
 #define SELECT5 PE10   // CS (step driver 4 - cs/uart (pe10))
+// #define EN5     PF2    // EN (step driver 4 - en (pf2))
 
 // Ось 6 (step driver 5)
 #define PUL6    PE1    // STEP (step driver 5 - step(pe1))
 #define DIR6    PF0    // DIR (step driver 5 - dir (pf0))
 #define SELECT6 PF1    // CS (step driver 5 - cs/uart (pf1))
+// #define EN6     PC15   // EN (step driver 5 - en (pc15))
 
 // ============================================================
 // Концевые выключатели (Endstops) — remap на fan, так как совпадают
@@ -48,9 +55,9 @@
 #define LIMIT6  PB11   // Endstop 6 (fan5 - pb11, если fan свободен; иначе io0 - pg12)
 
 // ============================================================
-// Управление питанием — remap на exp1
+// Управление питанием — remap на exp1 и io
 // ============================================================
-#define GLOBAL_ENABLE   PA3    // Аппаратное включение/выключение драйверов (fan3 - pa3, если свободен)
+#define GLOBAL_ENABLE   PG9    // Аппаратное включение/выключение драйверов (io3 - pg9, свободный GPIO для выхода)
 #define SUPPLY_ON_OFF   PC13   // MOSFET управление 24V питанием (exp1 - pc13)
 #define SUPPLY_BUTTON_STATE PC14 // Состояние кнопки питания (exp1 - pc14)
 
@@ -84,7 +91,7 @@
 // ============================================================
 // АЦП для измерения напряжения шины — remap на adc0
 // ============================================================
-#define VBUS    PF4    // ADC1_IN для измерения (adc0 - pf4, -, +)
+#define VBUS    PF4    // ADC1_IN для измерения (adc0 - pf4, -, +). Используй делитель для >3.3V
 
 // ============================================================
 // CAN интерфейс — совпадает
