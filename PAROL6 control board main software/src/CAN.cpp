@@ -13,9 +13,9 @@ FDCAN_FilterTypeDef can_filter;
 
 bool CANInit(BITRATE bitrate) {
     // 1. Настройка пинов CAN (PB8/RX, PB9/TX для FDCAN1 на Mellow Fly Super8)
-    // Предполагаем стандартные пины: PB8 - RX, PB9 - TX
-    pinMode(PB8, INPUT_PULLUP);  // RX
-    pinMode(PB9, OUTPUT);        // TX (AF7 для FDCAN1)
+    // Соответствует разъёму can - canl (pb8), canh (pb9), gnd, 5v, can
+    pinMode(PB8, INPUT_PULLUP);  // RX (canl - pb8)
+    pinMode(PB9, OUTPUT);        // TX (canh - pb9) (AF9 для FDCAN1)
 
     // 2. Настройка скорости (прескалера для FDCAN)
     uint32_t prescaler = 0;
@@ -94,7 +94,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* hfdcan) {
   if(hfdcan->Instance == FDCAN1) {
     __HAL_RCC_FDCAN_CLK_ENABLE();
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+    GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;  // PB8 (can - canl (pb8)), PB9 (can - canh (pb9))
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;

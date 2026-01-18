@@ -29,7 +29,7 @@ void MX_ADC1_Init(void) {
     // Обработка ошибки
   }
 
-  sConfig.Channel = ADC_CHANNEL_8;
+  sConfig.Channel = ADC_CHANNEL_14;  // Адаптировано для PF4 (adc0 - pf4, -, +; в STM32H723 PF4 соответствует ADC_CHANNEL_14 для ADC1/ADC2, проверьте даташит RM0468 для точного маппинга)
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_810CYCLES_5;  // Адаптировано для приближения к 15 циклам
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -44,12 +44,12 @@ void MX_ADC1_Init(void) {
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle) {
   if(adcHandle->Instance==ADC1) {
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOF_CLK_ENABLE();  // Для PF4 (adc0 - pf4, -, +)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Pin = GPIO_PIN_4;  // PF4 (adc0 - pf4, -, +)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
   }
 }
 

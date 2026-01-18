@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #define ADC_REF_VOLTAGE 3.3f
-#define VBUS_PIN PB0
+#define VBUS_PIN PF4  // adc0 - pf4, -, + (remap для избежания конфликта с heat0 - pb0)
 
 #define VOLTAGE_DIVIDER_R1 110000
 #define VOLTAGE_DIVIDER_R2 16000

@@ -126,7 +126,7 @@ void setup() {
     Serial.println("PAROL6 на Mellow Fly Super8 запускается...");
 
     // Инициализация суставов
-    Init_Joint_1(&Joint[0]);
+    Init_Joint_1(&Joint[0]); // Использует LIMIT6 = io5 - pd6, DIR1 = step driver 0 - dir (pc5), etc.
     Init_Joint_2(&Joint[1]);
     Init_Joint_3(&Joint[2]);
     Init_Joint_4(&Joint[3]);
@@ -136,7 +136,7 @@ void setup() {
     // Аппаратная инициализация (включает прерывания на лимитах)
     Init_ALL_HW();
 
-    digitalWrite(SUPPLY_ON_OFF, HIGH);  // Включить питание
+    digitalWrite(SUPPLY_ON_OFF, HIGH); // Включить питание (exp1 - pc13)
 
 #if (DEBUG > 0)
     Serial.println("Режим отладки включен");
@@ -152,7 +152,7 @@ void setup() {
     // ADC
     MX_ADC1_Init();
 
-    digitalWrite(GLOBAL_ENABLE, LOW);  // Включить драйверы
+    digitalWrite(GLOBAL_ENABLE, LOW);  // Включить драйверы (io6 - pa8, -, +)
 
     // Инициализация драйверов
     for (int i = 0; i < 6; i++) {
@@ -377,7 +377,7 @@ void Get_data() {
                     
                     Unpack_data(data_buffer);
                     
-                    PAROL6.In1 = digitalRead(INPUT1);
+                    PAROL6.In1 = digitalRead(INPUT1); // exp2 - pb6
                     PAROL6.In2 = digitalRead(INPUT2);
                     PAROL6.Estop = digitalRead(ESTOP);
                     digitalWrite(OUTPUT1, PAROL6.commanded_OUT1);
@@ -671,7 +671,7 @@ int home_all() {
             if (joint123_stage1 == 0) {
                 for (int i = 0; i < 3; i++) {
                     stepper[i].runSpeed();
-                    if (digitalRead(Joint[i].LIMIT) == Joint[i].limit_switch_trigger) {
+                    if (digitalRead(Joint[i].LIMIT) == Joint[i].limit_switch_trigger) { // Для LIMIT1 - io0 - pg12 и т.д.
                         Joint[i].homing_stage_1 = 1;
                         stepper[i].setSpeed(0);
                         stepper[i].setCurrentPosition(0);
