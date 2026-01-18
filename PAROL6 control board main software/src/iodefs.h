@@ -2,67 +2,94 @@
 #define IODEFS_H
 
 #include <Arduino.h>
-#include <stdio.h>
 
-#define PUL1 PC6 
-#define PUL2 PA10 
-#define PUL3 PC0 
-#define PUL4 PC3 
-#define PUL5 PC9 
-#define PUL6 PC5 
+// ============================================================
+// Шаговые драйверы (Step/Direction/CS для 6 осей робота)
+// ============================================================
 
-#define DIR1 PB15 
-#define DIR2 PA1 
-#define DIR3 PC1 
-#define DIR4 PA0 
-#define DIR5 PA8 
-#define DIR6 PB1 
+// Ось 1
+#define PUL1    PE_9    // STEP 1
+#define DIR1    PE_11   // DIR 1
+#define SELECT1 PE_15   // CS 1
 
-#define LIMIT1 PC12 
-#define LIMIT2 PB3 
-#define LIMIT3 PA15 
-#define LIMIT4 PD2 
-#define LIMIT5 PB4 
-#define LIMIT6 PC11 
+// Ось 2
+#define PUL2    PE_13   // STEP 2
+#define DIR2    PE_10   // DIR 2
+#define SELECT2 PE_12   // CS 2
 
-#define SELECT1 PC7 
-#define SELECT2 PA9
-#define SELECT3 PC15
-#define SELECT4 PC2
-#define SELECT5 PC8
-#define SELECT6 PC4
+// Ось 3
+#define PUL3    PD_15   // STEP 3
+#define DIR3    PD_14   // DIR 3
+#define SELECT3 PD_13   // CS 3
 
-#define GLOBAL_ENABLE PA3
+// Ось 4
+#define PUL4    PD_11   // STEP 4
+#define DIR4    PD_10   // DIR 4
+#define SELECT4 PD_12   // CS 4
 
-#define MISO PA6
-#define MOSI PA7
-#define SCK PA5
-#define FLASH_SELECT PA4
+// Ось 5
+#define PUL5    PD_8    // STEP 5
+#define DIR5    PD_9    // DIR 5
+#define SELECT5 PD_7    // CS 5
 
-#define LED1 PB2
-#define LED2 PB10
+// Ось 6
+#define PUL6    PD_5    // STEP 6
+#define DIR6    PD_6    // DIR 6
+#define SELECT6 PD_4    // CS 6
 
-#define SUPPLY_ON_OFF PC10
-#define SUPPLY_BUTTON_STATE PC14
+// ============================================================
+// Концевые выключатели (Endstops)
+// ============================================================
+#define LIMIT1  PA_0    // Endstop 1
+#define LIMIT2  PA_1    // Endstop 2
+#define LIMIT3  PA_2    // Endstop 3
+#define LIMIT4  PA_3    // Endstop 4
+#define LIMIT5  PA_4    // Endstop 5
+#define LIMIT6  PA_5    // Endstop 6
 
-#define INPUT1 PB6
-#define INPUT2 PB5
+// ============================================================
+// Управление питанием
+// ============================================================
+#define GLOBAL_ENABLE   PA_3    // Аппаратное включение/выключение драйверов
+#define SUPPLY_ON_OFF   PC_10   // MOSFET управление 24V питанием
+#define SUPPLY_BUTTON_STATE PC_14 // Состояние кнопки питания
 
-#define OUTPUT1 PC13
-#define OUTPUT2 PB7
+// ============================================================
+// SPI для драйверов TMC5160
+// ============================================================
+#define MISO    PA_6    // SPI1_MISO
+#define MOSI    PA_7    // SPI1_MOSI
+#define SCK     PA_5    // SPI1_SCK
+#define FLASH_SELECT PA_4  // CS для Flash памяти
 
-#define ESTOP PB14
+// ============================================================
+// Светодиоды индикации
+// ============================================================
+#define LED1    PB_2    // Статусный светодиод 1
+#define LED2    PB_10   // Статусный светодиод 2
 
-#define VBUS PB0  // ADC1 CHANNEL 8
+// ============================================================
+// Цифровые входы/выходы общего назначения
+// ============================================================
+#define INPUT1  PB_6    // Цифровой вход 1
+#define INPUT2  PB_5    // Цифровой вход 2
+#define OUTPUT1 PC_13   // Цифровой выход 1
+#define OUTPUT2 PB_7    // Цифровой выход 2
 
-#define USB_D_PLUS  PA12 
-#define USB_D_MINUS PA11 
+// ============================================================
+// Аварийная остановка
+// ============================================================
+#define ESTOP   PB_14   // Кнопка E-Stop
 
-#define CAN1TX PB9
-#define CAN1RX PB8
+// ============================================================
+// АЦП для измерения напряжения шины
+// ============================================================
+#define VBUS    PB_0    // ADC1_IN8 - измерение напряжения шины питания
 
-#define CAN1TX PB13
-#define CAN1RX PB12
+// ============================================================
+// CAN интерфейс
+// ============================================================
+#define CAN1_TX PB_9    // CAN1_TX
+#define CAN1_RX PB_8    // CAN1_RX
 
-
-#endif
+#endif /* IODEFS_H */

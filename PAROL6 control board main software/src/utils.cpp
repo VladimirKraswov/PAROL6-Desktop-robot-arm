@@ -1,190 +1,118 @@
-/** @file utils.cpp (файл реализации utils.cpp)
-    @brief Документированный файл.
-
-    Исходный файл для вспомогательных функций.
-    Для схемы обратитесь к:
-    Для дополнительной функциональности выводов обратитесь к:
-
-*/
-
 #include "utils.h"
 
-volatile uint32_t counter_1us = 0; // Счетчик микросекунд
-
+volatile uint32_t counter_1us = 0;
 
 /**
- * Вспомогательная функция для преобразования номера сустава (начиная с 1) в индекс массива (начиная с 0).
- * @param joint__ номер сустава (1-6)
- * @return индекс массива (0-5)
+ * Вспомогательная функция для преобразования номера сустава в индекс массива
  */
-int JOINT(int joint__){
-  return joint__ - 1;
+int JOINT(int joint__) {
+    return joint__ - 1;
 }
 
-/// @brief Включить питание 24В (подать HIGH на управляющий пин).
-void Turn_on_24V(void)
-{
-  digitalWrite(SUPPLY_ON_OFF, HIGH);
+/// @brief Включить питание 24В
+void Turn_on_24V(void) {
+    digitalWrite(SUPPLY_ON_OFF, HIGH);
 }
 
-/// @brief Отключить питание 24В (подать LOW на управляющий пин).
-void Turn_off_24V(void)
-{
-  digitalWrite(SUPPLY_ON_OFF, LOW);
+/// @brief Отключить питание 24В
+void Turn_off_24V(void) {
+    digitalWrite(SUPPLY_ON_OFF, LOW);
 }
 
 /**
- * Инициализирует периодическое прерывание (тикер) на заданном таймере.
- * @param[in] Instance указатель на экземпляр таймера (например, TIM2, TIM3)
- * @param[in] частота прерываний (в Гц)
- * @param[in] (*int_callback)() указатель на функцию-обработчик прерывания
+ * Управление кнопкой питания
  */
-void Ticker_init(TIM_TypeDef *Instance, int frequency, void (*int_callback)())
-{
-
-  HardwareTimer *MyTim = new HardwareTimer(Instance);
-  MyTim->setOverflow(frequency, HERTZ_FORMAT);
-  MyTim->attachInterrupt((*int_callback));
-  MyTim->resume();
-}
-
-/// @brief Инициализирует прерывание с периодом 1 мкс на таймере TIM3.
-void Init_tick_1us()
-{
-  Ticker_init(TIM3, 1000000, tick_1us);
-}
-
-/// @brief Обработчик прерывания таймера 1 мкс. Инкрементирует счетчик.
-void tick_1us()
-{
-  counter_1us = counter_1us + 1;
-}
-
-/// @brief Возвращает текущее значение счетчика микросекунд.
-/// @return Текущее время в микросекундах (с момента старта счетчика).
-uint32_t us_tick()
-{
-  return counter_1us;
+void Power_switch_managment() {
+    static uint32_t previous_millis = 0;
+    static uint32_t turn_off_flag = 0;
+    uint32_t current_millis = millis();
+    
+    // Проверяем условие каждые 50 мс
+    if (current_millis - previous_millis >= 50) {
+        // Если был установлен флаг отключения, выполняем отключение
+        if (turn_off_flag == 1) {
+            turn_off_flag = 0;
+            digitalWrite(SUPPLY_ON_OFF, LOW);
+        }
+        
+        // Если кнопка питания нажата
+        if (digitalRead(SUPPLY_BUTTON_STATE) == HIGH) {
+            turn_off_flag = 1;
+            digitalWrite(SUPPLY_ON_OFF, HIGH);
+        }
+        
+        previous_millis = current_millis;
+    }
 }
 
 /**
- * Управление кнопкой питания.
- * Если кнопка питания нажата - включить робота.
- * Если кнопка удерживается более ~3 секунд - отключить силовую часть робота (24В).
- * Робот может продолжать общаться по USB при отключенной силовой части, но некоторые функции управления будут недоступны.
- *
- * Логика примера (когда включен):
- * - Проверяет каждые 50 мс, нажата ли кнопка.
- * - Если да, то проверяет, прошло ли 3 секунды, и если да, то отключает питание.
- * - Для включения питания: как только кнопка нажата (в setup), пин holding переходит в HIGH.
- * - Если кнопка питания нажата, FET holding находится в HIGH.
- * - Если кнопка удерживается дольше, FET holding переходит в LOW (отключение).
+ * Преобразует целое число в массив из 3 байт
  */
-void Power_switch_managment()
-{
-  static uint32_t previous_milis = 0; // Время предыдущей проверки
-  static uint32_t turn_off_flag = 0;  // Флаг для отложенного отключения
-  uint32_t current_milis = HAL_GetTick(); // Текущее время
+void intTo3Bytes(int32_t value, byte *bytes) {
+    bytes[0] = (value >> 16) & 0xFF;
+    bytes[1] = (value >> 8) & 0xFF;
+    bytes[2] = value & 0xFF;
+}
 
-  // Проверяем условие каждые 50 мс
-  if (current_milis - previous_milis >= 50)
-  {
-    // Если был установлен флаг отключения, выполняем отключение и сбрасываем флаг
-    if (turn_off_flag == 1)
-    {
-      turn_off_flag = 0;
-      digitalWrite(SUPPLY_ON_OFF, LOW); // Отключить питание 24В
+/**
+ * Преобразует целое число в массив из 2 байт
+ */
+void intTo2Bytes(int32_t value, byte *bytes) {
+    bytes[0] = (value >> 8) & 0xFF;
+    bytes[1] = value & 0xFF;
+}
+
+/**
+ * Преобразует массив из 3 байт в целое число со знаком
+ */
+int bytes_to_int(uint8_t *bytes) {
+    int value = ((int)bytes[0] << 16) | ((int)bytes[1] << 8) | (int)bytes[2];
+    // Проверка на отрицательное число
+    if (value & 0x00800000) {
+        value |= 0xFF000000;
     }
-    // Если кнопка питания нажата (состояние пина HIGH)
-    if (digitalRead(SUPPLY_BUTTON_STATE) == HIGH)
-    {
-      turn_off_flag = 1; // Установить флаг для отключения при следующей проверке
-      digitalWrite(SUPPLY_ON_OFF, HIGH); // Включить питание 24В немедленно
+    return value;
+}
+
+/**
+ * Преобразует массив из 2 байт в целое число со знаком
+ */
+int two_bytes_to_int(uint8_t *bytes) {
+    int value = ((int)bytes[0] << 8) | (int)bytes[1];
+    // Проверка на отрицательное число
+    if (value & 0x00008000) {
+        value |= 0xFFFF0000;
     }
-    // Обновляем время последней проверки
-    previous_milis = current_milis;
-  }
+    return value;
 }
 
-// На машинах с порядком байт от старшего к младшему (big endian), первый байт двоичного представления многобайтового типа данных сохраняется первым.
-
-/// @brief Преобразует целое число (int32_t) в массив из 3 байт. Используется для передачи позиции и скорости робота.
-/// @param value Исходное целое число
-/// @param bytes Указатель на массив из 3 байт (результат)
-void intTo3Bytes(int32_t value, byte *bytes)
-{
-  bytes[0] = (value >> 16) & 0xFF; // Извлечь старший байт
-  bytes[1] = (value >> 8) & 0xFF;  // Извлечь средний байт
-  bytes[2] = value & 0xFF;         // Извлечь младший байт
-}
-
-/// @brief Преобразует целое число (int32_t) в массив из 2 байт. Используется для данных захвата (гриппера).
-/// @param value Исходное целое число
-/// @param bytes Указатель на массив из 2 байт (результат)
-void intTo2Bytes(int32_t value, byte *bytes)
-{
-  bytes[0] = (value >> 8) & 0xFF; // Извлечь старший байт
-  bytes[1] = value & 0xFF;        // Извлечь младший байт
-}
-
-/// @brief Преобразует массив из 3 байт в целое число со знаком. Используется для данных позиции и скорости робота.
-/// @param bytes Указатель на массив из 3 байт
-/// @return Собранное целое число (с расширением знака при необходимости)
-int bytes_to_int(uint8_t *bytes)
-{
-  int value = ((int)bytes[0] << 16) | ((int)bytes[1] << 8) | (int)bytes[2];
-  // Проверка на отрицательное число (23-й бит в 3-байтовом представлении)
-  if (value & 0x00800000)
-  { // Если установлен знаковый бит...
-    value |= 0xFF000000; // ...расширяем знак на старший байт 32-битного int
-  }
-  return value;
-}
-
-/// @brief Преобразует массив из 2 байт в целое число со знаком. Используется для данных захвата (гриппера).
-/// @param bytes Указатель на массив из 2 байт
-/// @return Собранное целое число (с расширением знака при необходимости)
-int two_bytes_to_int(uint8_t *bytes)
-{
-  int value = ((int)bytes[0] << 8) | (int)bytes[1];
-  // Проверка на отрицательное число (15-й бит в 2-байтовом представлении)
-  if (value & 0x00008000)
-  { // Если установлен знаковый бит...
-    value |= 0xFFFF0000; // ...расширяем знак на старшие 2 байта 32-битного int
-  }
-  return value;
-}
-
-/// @brief Преобразует массив из 8 бит (bool) в один байт (unsigned char). Бит 0 массива становится старшим битом (MSB) байта (big-endian).
-/// @param bits Указатель на массив из 8 значений bool
-/// @return Байт, собранный из битов
-unsigned char bitsToByte(const bool *bits)
-{
-  unsigned char byte = 0;
-  for (int i = 0; i < 8; ++i)
-  {
-    if (bits[i])
-    {
-      byte |= (1 << (7 - i)); // Биты упаковываются слева направо (big-endian)
+/**
+ * Преобразует массив из 8 бит в один байт
+ */
+unsigned char bitsToByte(const bool *bits) {
+    unsigned char byte = 0;
+    for (int i = 0; i < 8; ++i) {
+        if (bits[i]) {
+            byte |= (1 << (7 - i));
+        }
     }
-  }
-  return byte;
+    return byte;
 }
 
-/// @brief Преобразует один байт в массив из 8 бит (bool). Младший бит (LSB) байта сохраняется в bits[0] (little-endian).
-/// @param b Исходный байт
-/// @param bits Указатель на массив для записи 8 бит (результат)
+/**
+ * Преобразует байт в массив из 8 бит (little-endian)
+ */
 void byteToBits(byte b, bool* bits) {
-  for (int i = 0; i < 8; i++) {
-    bits[i] = (b >> i) & 0x01; // Биты извлекаются справа налево, bits[0] = LSB
-  }
+    for (int i = 0; i < 8; i++) {
+        bits[i] = (b >> i) & 0x01;
+    }
 }
 
-/// @brief Преобразует один байт в массив из 8 бит (bool). Старший бит (MSB) байта сохраняется в bits[0] (big-endian).
-/// @param b Исходный байт
-/// @param bits Указатель на массив для записи 8 бит (результат)
+/**
+ * Преобразует байт в массив из 8 бит (big-endian)
+ */
 void byteToBitsBigEndian(byte b, bool* bits) {
-  for (int i = 7; i >= 0; i--) {
-    bits[i] = (b >> (7 - i)) & 0x01; // Биты извлекаются слева направо, bits[0] = MSB
-  }
+    for (int i = 7; i >= 0; i--) {
+        bits[i] = (b >> (7 - i)) & 0x01;
+    }
 }
