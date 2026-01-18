@@ -1,11 +1,7 @@
-/** @file common.h (заголовочный файл common.h) - Внимание: Похоже, имя файла должно быть structs.h на основе содержимого.
-    @brief Документированный файл.
-
-    Здесь объявляются структуры для данных, которые часто меняются и используются в нескольких модулях.
-    Пример: структура связи с мотором --> данные, которые мы получаем по USB.
-    Для схемы обратитесь к:
-    Для дополнительной функциональности выводов обратитесь к:
-
+/** @file structs.h
+    @brief Заголовочный файл структур данных.
+    
+    Содержит структуры для моторов, робота и гриппера.
 */
 
 #ifndef STRUCTS
@@ -13,216 +9,107 @@
 
 #include <Arduino.h>
 
-/// Разместить все объявления выводов и подобных вещей, специфичных для двигателей,
-/// чтобы к ним можно было обращаться через индексацию?
-
 /**
- * @brief Структура, описывающая состояние и параметры одного двигателя/сустава робота.
+ * @brief Структура для одного сустава/мотора.
  */
-struct MotorStruct
-{
-
-  /// @brief Максимальный ток двигателя. Указывается производителем как среднеквадратичное значение (RMS current by stepper manufacturer)
-  int motor_max_current = 100;
-  /// @brief Скорость двигателя при поиске начального положения (гоминге)
-  int homing_speed = 100;
-
-  /// @brief Максимальная скорость двигателя
-  int motor_max_speed = 0;
-  /// @brief Максимальное ускорение двигателя
-  int motor_max_acceleration = 0;
-  /// @brief Минимальная скорость двигателя
-  int motor_min_speed = 0;
-  /// @brief Минимальное ускорение двигателя
-  int motor_min_acceleration = 0;
-
-  /// @brief Диапазон движения робота в положительном направлении (в радианах)
-  float joint_range_positive;
-  /// @brief Диапазон движения робота в отрицательном направлении (в радианах)
-  float joint_range_negative;
-
-  /// @brief Диапазон движения робота в положительном направлении в шагах (зависит от настройки микрошага)
-  float joint_range_positive_steps;
-  /// @brief Диапазон движения робота в отрицательном направлении в шагах (зависит от настройки микрошага)
-  float joint_range_negative_steps;
-
-  /// @brief Позиция ожидания робота
-  int standby_position;
-  /// @brief Количество шагов от момента срабатывания концевика до позиции ожидания
-  float homed_position;
-  /// @brief Прошел ли сустав процедуру гоминга? homed = 1, когда вся процедура завершена.
-  int homed;
-  /// @brief Выполняется ли в данный момент гоминг для этого сустава?
-  int homing;
-  /// @brief Этап 1 процедуры гоминга
-  int homing_stage_1 = 0;
-  /// @brief Этап 2 процедуры гоминга
-  int homing_stage_2 = 0;
-
-  /// @brief Флаг ошибки температуры
-  int temperature_error;
-  /// @brief Флаг предупреждения о температуре
-  int temperature_warrning;
-
-  /// @brief Используемое значение микрошага
-  int microstep;
-  /// @brief Уровень сигнала, при котором срабатывает концевой выключатель
-  int limit_switch_trigger;
-
-  /// @brief Передаточное отношение редуктора, используемое в суставе
-  float reduction_ratio;
-
-  /// @brief Текущая позиция сустава
-  long position;
-  /// @brief Текущая скорость сустава
-  int speed;
-  /// @brief Текущий ток сустава
-  int current;
-
-  /// @brief Пин подключения концевика сустава
-  int LIMIT;
-  /// @brief Пин направления вращения сустава
-  int DIR;
-  /// @brief Пин шага (импульса) сустава
-  int STEP;
-  /// @brief Пин выбора (CS) на шине SPI для драйвера этого сустава
-  int SELECT;
-  /// @brief Какой драйвер управляет этим двигателем?
-  int driver_chip_on_board;
-  /// @brief Двигается ли робот в правильном направлении? (направление инвертировано?)
-  int direction_reversed;
-
-  /// @brief Коэффициент масштабирования для тока удержания на основе заданного RMS тока.
-  /// Максимальное значение 31, но ограничено доступным током, определяемым резистором считывания (sense resistor) в соответствии с даташитом драйвера.
-  int ihold;
-  /// @brief Коэффициент масштабирования для рабочего тока на основе заданного RMS тока.
-  /// Максимальное значение 31, но ограничено доступным током, определяемым резистором считывания (sense resistor) в соответствии с даташитом драйвера.
-  int irun;
-  /// @brief Устанавливает, насколько масштабируется ток, когда двигатели удерживают позицию (должно быть меньше 1, обычно 0.95)
-  float hold_multiplier;
-
-  /// @brief Предупреждение о перегреве, рекомендуется уменьшить ток или как-то охладить драйверы.
-  int over_temp_pre_warning;
-  /// @brief Предупреждение о перегреве, драйверы отключаются. (Этого никогда не должно происходить, опасно)
-  int over_temp_warning;
-  /// @brief TODO проверить это (диагностический вывод 0 драйвера)
-  int diag0;
-  /// @brief Ничего не подключено к фазе B (обрыв цепи)
-  int open_load_B;
-  /// @brief Ничего не подключено к фазе A (обрыв цепи)
-  int open_load_A;
-  /// @brief Короткое замыкание на землю фазы B
-  int short_2_gnd_B;
-  /// @brief Короткое замыкание на землю фазы A
-  int short_2_gnd_A;
-
-  /// @brief Командный режим работы (полученный от управления)
-  int commaned_mode;
-  /// @brief Заданная позиция (полученная от управления)
-  int commanded_position;
-  /// @brief Заданная скорость (полученная от управления)
-  int commanded_velocity;
-  /// @brief Заданный ток (полученный от управления)
-  int commanded_current;
-
-  /// @brief Робот пытался переместиться в позицию, в которую ему не разрешено двигаться.
-  int position_error = 0;
-
-  /// @brief Общий флаг ошибки для сустава
-  int error;
+struct MotorStruct {
+    int motor_max_current = 100;  // Максимальный ток (RMS)
+    int homing_speed = 100;  // Скорость гоминга
+    int motor_max_speed = 0;  // Макс. скорость
+    int motor_max_acceleration = 0;  // Макс. ускорение
+    int motor_min_speed = 0;  // Мин. скорость
+    int motor_min_acceleration = 0;  // Мин. ускорение
+    float joint_range_positive;  // Положительный диапазон (радианы)
+    float joint_range_negative;  // Отрицательный диапазон (радианы)
+    float joint_range_positive_steps;  // Положительный диапазон (шаги)
+    float joint_range_negative_steps;  // Отрицательный диапазон (шаги)
+    int standby_position;  // Позиция ожидания
+    float homed_position;  // Позиция после гоминга
+    int homed;  // Флаг гоминга завершено
+    int homing;  // Флаг гоминг в процессе
+    int homing_stage_1 = 0;  // Этап 1 гоминга
+    int homing_stage_2 = 0;  // Этап 2 гоминга
+    int temperature_error;  // Ошибка температуры
+    int temperature_warrning;  // Предупреждение температуры
+    int microstep;  // Микрошаг
+    int limit_switch_trigger;  // Триггер концевика
+    float reduction_ratio;  // Передаточное отношение
+    long position;  // Текущая позиция
+    int speed;  // Текущая скорость
+    int current;  // Текущий ток
+    int LIMIT;  // Пин концевика
+    int DIR;  // Пин направления
+    int STEP;  // Пин шага
+    int SELECT;  // Пин CS SPI
+    int driver_chip_on_board;  // Драйвер на плате
+    int direction_reversed;  // Обратное направление
+    int ihold;  // Ток удержания
+    int irun;  // Ток работы
+    float hold_multiplier;  // Множитель удержания
+    int over_temp_pre_warning;  // Предупреждение перегрева
+    int over_temp_warning;  // Ошибка перегрева
+    int diag0;  // Диагностика 0
+    int open_load_B;  // Обрыв B
+    int open_load_A;  // Обрыв A
+    int short_2_gnd_B;  // КЗ B
+    int short_2_gnd_A;  // КЗ A
+    int commaned_mode;  // Режим команды
+    int commanded_position;  // Командная позиция
+    int commanded_velocity;  // Командная скорость
+    int commanded_current;  // Командный ток
+    int position_error = 0;  // Ошибка позиции
+    int error;  // Общая ошибка
 };
 
 /**
- * @brief Общие данные о состоянии робота.
+ * @brief Структура для робота в целом.
  */
-struct Robot
-{
-  /// @brief Идентификатор CAN шины для робота
-  int CAN_ID;
-  /// @brief Значение CRC для проверки целостности данных
-  int CRC_value = 212;
-  /// @brief Текущая команда, выполняемая роботом
-  int command;
-  /// @brief Сустав, на который направлена текущая команда
-  int affected_joint;
-  /// @brief Заданное состояние цифрового выхода 1 (отправлено с ПК)
-  int commanded_OUT1;
-  /// @brief Заданное состояние цифрового выхода 2 (отправлено с ПК)
-  int commanded_OUT2;
-  /// @brief Текущее состояние цифрового входа 1 (считано с пина)
-  int In1;
-  /// @brief Текущее состояние цифрового входа 2 (считано с пина)
-  int In2;
-  /// @brief Текущее состояние цифрового выхода 1 (отправлено на пин)
-  int Out1;
-  /// @brief Текущее состояние цифрового выхода 2 (отправлено на пин)
-  int Out2;
-  /// @brief Текущее состояние кнопки аварийной остановки (считано с пина)
-  int Estop;
-  /// @brief Время, прошедшее между двумя последовательными командами с ПК (в тиках таймера)
-  unsigned int time_between_commands = 0;
-  /// @brief Заданное состояние выхода 1 (возможно, дублирует commanded_OUT1)
-  int Out1_commanded;
-  /// @brief Заданное состояние выхода 2 (возможно, дублирует commanded_OUT2)
-  int Out2_commanded;
-  /// @brief Дополнительный байт данных для расширения функциональности
-  int xtr2_byte = 8;
-  /// @brief Таймаут представляет время, прошедшее между двумя командами, отправленными с ПК.
-  /// 255 = 255 мс. Если установлено значение 200 и между двумя командами прошло 200 мс,
-  /// робот переходит в состояние ошибки таймаута. Если установлено в 0, функция отключена.
-  /// Это значение отправляется с ПК на робота для его настройки.
-  int Timeout = 0;
-  /// @brief Указывает, сработал ли таймаут робота или нет.
-  /// Робот отправляет этот флаг обратно на ПК.
-  int timeout_error = 100;
-  /// @brief Сустав, на который направлена команда (возможно, дублирует affected_joint)
-  int Affected_joint;
-  /// @brief Флаг отключения робота (1 - отключен, 0 - включен)
-  int disabled = 0;
+struct Robot {
+    int CAN_ID;  // ID CAN
+    int CRC_value = 212;  // CRC
+    int command;  // Текущая команда
+    int affected_joint;  // Сустав для команды
+    int commanded_OUT1;  // Команда OUT1
+    int commanded_OUT2;  // Команда OUT2
+    int In1;  // Вход 1
+    int In2;  // Вход 2
+    int Out1;  // Выход 1
+    int Out2;  // Выход 2
+    int Estop;  // E-Stop
+    unsigned int time_between_commands = 0;  // Время между командами
+    int Out1_commanded;  // Команда OUT1
+    int Out2_commanded;  // Команда OUT2
+    int xtr2_byte = 8;  // Доп. байт
+    int Timeout = 0;  // Таймаут
+    int timeout_error = 100;  // Ошибка таймаута
+    int Affected_joint;  // Сустав (дубликат)
+    int disabled = 0;  // Флаг отключения
 };
 
 /**
- * @brief Все заданные и текущие данные для захвата (гриппера).
+ * @brief Структура для гриппера.
  */
-struct Gripper
-{
-  /// @brief Данные, которые отправляются от захвата к роботу (текущее состояние).
-  int current_position = 0;
-  int current_speed = 1;
-  int current_current = 2;
-  int current_status = 1;
-  int object_detection = 1;
-  int Gripper_ID = 0;
-
-  /// @brief Данные, которые отправляются от робота к захвату (команды).
-  int commanded_position = 0;
-  int commanded_speed = 0;
-  int commanded_current = 0;
-  int command = 3;
-  int mode;
-  int commanded_ID;
-
-  /// @brief Предыдущие значения команд (для отслеживания изменений и минимизации трафика).
-  int prev_commanded_position;
-  int prev_commanded_speed;
-  int prev_commanded_current;
-  int prev_command;
-  int prev_mode;
-  int prev_commanded_ID;
+struct Gripper {
+    int current_position = 0;  // Текущая позиция
+    int current_speed = 1;  // Текущая скорость
+    int current_current = 2;  // Текущий ток
+    int current_status = 1;  // Статус
+    int object_detection = 1;  // Обнаружение объекта
+    int Gripper_ID = 0;  // ID гриппера
+    int commanded_position = 0;  // Командная позиция
+    int commanded_speed = 0;  // Командная скорость
+    int commanded_current = 0;  // Командный ток
+    int command = 3;  // Команда
+    int mode;  // Режим
+    int commanded_ID;  // Командный ID
+    int prev_commanded_position;  // Предыдущая позиция
+    int prev_commanded_speed;  // Предыдущая скорость
+    int prev_commanded_current;  // Предыдущий ток
+    int prev_command;  // Предыдущая команда
+    int prev_mode;  // Предыдущий режим
+    int prev_commanded_ID;  // Предыдущий ID
 };
 
-/* Внешнее объявление глобального экземпляра структуры захвата.
-   Определение (выделение памяти) должно быть в одном из .cpp файлов (например, main.cpp).
-*/
-extern Gripper Comp_gripper;
-
-/* Зарезервированные структуры для будущего использования или не полностью реализованные. */
-struct data_send
-{
-};
-
-struct CommsStruct
-{
-};
+extern Gripper Comp_gripper;  // Глобальный гриппер
 
 #endif /* STRUCTS */

@@ -8,7 +8,7 @@ void Init_ADC(void) {
 }
 
 void Init_USB(void) {
-    // USB автоматически инициализируется в Arduino
+    // Авто в Arduino
 }
 
 void Init_Digital_Inputs(void) {
@@ -60,7 +60,7 @@ void Init_SPI(void) {
 }
 
 void Init_CAN(void) {
-    // CAN инициализируется отдельно через CANInit()
+    // Заглушка (реализуйте если нужно)
 }
 
 void Init_ALL_HW(void) {
