@@ -117,6 +117,8 @@
                 "ARDUINO_USB_CDC_ON_BOOT=1",
                 "PC_3_C=PC3",
                 "PC_2_C=PC2",
+                "HAL_PCD_MODULE_ENABLED",
+                "HAL_FDCAN_MODULE_ENABLED",
                 "STM32H7xx",
                 "ARDUINO=10808",
                 "ARDUINO_ARCH_STM32",

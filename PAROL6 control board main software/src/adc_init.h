@@ -26,3 +26,5 @@ int BUS_voltage(void);
 #endif
 
 #endif
+
+extern ADC_HandleTypeDef hadc1;

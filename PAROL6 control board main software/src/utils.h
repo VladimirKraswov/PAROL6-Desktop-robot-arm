@@ -13,6 +13,7 @@
 #include "hw_init.h"
 #include <SPI.h>
 #include "constants.h"
+#include <HardwareTimer.h>
 
 /* Прототипы функций */
 

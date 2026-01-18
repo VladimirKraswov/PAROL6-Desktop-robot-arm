@@ -1,10 +1,7 @@
-/** @file hw_init.h (заголовочный файл hw_init.h)
-    @brief Документированный файл.
+/** @file hw_init.h
+    @brief Заголовочный файл аппаратной инициализации.
     
-    Заголовочный файл аппаратной инициализации.
-    Для схемы обратитесь к:
-    Для дополнительной функциональности выводов обратитесь к:
-
+    Содержит прототипы функций для настройки аппаратной части.
 */
 
 #ifndef HW_SETUP_H
@@ -30,11 +27,11 @@ void Init_CAN(void);
 /// Инициализировать всю аппаратную часть (Initialize all hardware)
 void Init_ALL_HW(void);
 /// Инициализировать ISR для ложных срабатываний (Initialize false trigger ISR)
-void Init_False_Trigger_ISR();
+void Init_False_Trigger_ISR(void);
 /// Включить ISR для ложных срабатываний (Enable false trigger ISR)
-void Enable_False_Trigger_ISR();
+void Enable_False_Trigger_ISR(void);
 /// Отключить ISR для ложных срабатываний (Disable false trigger ISR)
-void Disable_False_Trigger_ISR();
+void Disable_False_Trigger_ISR(void);
 
 /* Обработчики прерываний (ISR) для концевых выключателей */
 

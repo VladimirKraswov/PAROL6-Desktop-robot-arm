@@ -14,6 +14,8 @@
 #include "constants.h"
 #include "adc_init.h"
 #include "motor_init.h"
+#include "stm32h7xx_hal.h"  // Для HAL на STM32H7
+#include "coms_CAN.h"  // Для CAN-протокола
 
 #define DEBUG 0  // Режим отладки драйверов
 #define DEBUG_COMS 0  // Отладка коммуникаций
@@ -113,17 +115,12 @@ void Get_data();
 void reset_homing();
 void Handle_gripper();
 
-// Заглушки для гриппера
-void Send_gripper_cal() {}
-void Send_clear_error() {}
-void Send_gripper_pack_empty() {}
-void Send_gripper_pack() {}
-
 /**
  * Настройка
  */
 void setup() {
-    Serial.begin(115200);
+    HAL_Init();  // Инициализация HAL для STM32H7
+    Serial.begin(3000000);  // Baud rate как в оригинале
     while (!Serial) delay(10);
     
     Serial.println("PAROL6 на Mellow Fly Super8 запускается...");
@@ -136,14 +133,10 @@ void setup() {
     Init_Joint_5(&Joint[4]);
     Init_Joint_6(&Joint[5]);
 
-    // Аппаратная инициализация
-    Init_motor_direction();
-    Init_Digital_Inputs();
-    Init_Digital_Outputs();
+    // Аппаратная инициализация (включает прерывания на лимитах)
+    Init_ALL_HW();
 
     digitalWrite(SUPPLY_ON_OFF, HIGH);  // Включить питание
-
-    digitalWrite(GLOBAL_ENABLE, HIGH);  // Отключить драйверы временно
 
 #if (DEBUG > 0)
     Serial.println("Режим отладки включен");
@@ -190,6 +183,12 @@ void setup() {
     stepper[5].setMaxSpeed(50000);
     stepper[5].setAcceleration(100);
     stepper[5].setSpeed(0);
+
+    // Инициализация CAN
+    Setup_CAN_bus();
+
+    // Инициализация направления моторов
+    Init_motor_direction();
 
     Serial.println("Инициализация завершена");
 }
@@ -294,7 +293,7 @@ void loop() {
     }
 
     if (PAROL6.disabled == 0) {
-        if (PAROL6.command == 100) {  // Гоминг
+        if (PAROL6.command == 100 || (PAROL6.command == 255 && home_command == 1)) {  // Гоминг
             home_command = 1;
             homed = 0;
             home_all();
@@ -332,6 +331,9 @@ void loop() {
 
     // Получение данных
     Get_data();
+
+    // Обработка CAN (как в оригинале)
+    CAN_protocol(Serial);
 }
 
 /**
@@ -646,7 +648,7 @@ void reset_homing() {
 }
 
 /**
- * Гоминг всех суставов
+ * Гоминг всех суставов (полная реализация как в оригинале)
  */
 int home_all() {
     if (homed == 0) {
@@ -743,7 +745,141 @@ int home_all() {
             }
         }
         
-        // Аналогично для суставов 4-6 (реализуйте по аналогии, если нужно расширить)
+        if (joint123_done == 1) {
+            // Сустав 4
+            if (Joint[3].homing_stage_2 == 1 && J4_stage4 == 0) {
+                stepper[3].setAcceleration(5500);
+                stepper[3].moveTo(Joint[3].homed_position);
+                stepper[3].run();
+                if (stepper[3].currentPosition() == Joint[3].homed_position) {
+                    J4_stage4 = 1;
+                    stepper[3].setSpeed(2050);
+                    J4_done = 1;
+                    Joint[3].homed = 1;
+                }
+            }
+            
+            if (J4_stage3 == 1 && Joint[3].homing_stage_2 == 0) {
+                if (digitalRead(Joint[3].LIMIT) == Joint[3].limit_switch_trigger) {
+                    Joint[3].homing_stage_2 = 1;
+                    stepper[3].setSpeed(0);
+                    stepper[3].setCurrentPosition(0);
+                }
+                stepper[3].runSpeed();
+            }
+            
+            if (Joint[3].homing_stage_1 == 1 && J4_stage2 == 0) {
+                stepper[3].moveTo(-1550);
+                stepper[3].setSpeed(-4050);
+                stepper[3].runSpeedToPosition();
+                if (stepper[3].currentPosition() == -1550) {
+                    J4_stage2 = 1;
+                    J4_stage3 = 1;
+                    stepper[3].setSpeed(4050);
+                }
+            }
+            
+            if (Joint[3].homing_stage_1 == 0) {
+                if (digitalRead(Joint[3].LIMIT) == Joint[3].limit_switch_trigger) {
+                    Joint[3].homing_stage_1 = 1;
+                    stepper[3].setSpeed(0);
+                    stepper[3].setCurrentPosition(0);
+                }
+                stepper[3].runSpeed();
+            }
+        }
+        
+        if (J4_done == 1) {
+            // Сустав 6
+            if (Joint[5].homing_stage_2 == 1 && J6_stage4 == 0) {
+                stepper[5].setAcceleration(10500);
+                stepper[5].moveTo(Joint[5].homed_position);
+                stepper[5].run();
+                if (stepper[5].currentPosition() == Joint[5].homed_position) {
+                    J6_stage4 = 1;
+                    stepper[5].setSpeed(1050);
+                    J6_done = 1;
+                    Joint[5].homed = 1;
+                }
+            }
+            
+            if (J6_stage3 == 1 && Joint[5].homing_stage_2 == 0) {
+                if (digitalRead(Joint[5].LIMIT) == Joint[5].limit_switch_trigger) {
+                    Joint[5].homing_stage_2 = 1;
+                    stepper[5].setSpeed(0);
+                    stepper[5].setCurrentPosition(0);
+                }
+                stepper[5].runSpeed();
+            }
+            
+            if (Joint[5].homing_stage_1 == 1 && J6_stage2 == 0) {
+                stepper[5].moveTo(1550);
+                stepper[5].setSpeed(4050);
+                stepper[5].runSpeedToPosition();
+                if (stepper[5].currentPosition() == 1550) {
+                    J6_stage2 = 1;
+                    J6_stage3 = 1;
+                    stepper[5].setSpeed(-8050);
+                }
+            }
+            
+            if (Joint[5].homing_stage_1 == 0) {
+                if (digitalRead(Joint[5].LIMIT) == Joint[5].limit_switch_trigger) {
+                    Joint[5].homing_stage_1 = 1;
+                    stepper[5].setSpeed(0);
+                    stepper[5].setCurrentPosition(0);
+                }
+                stepper[5].runSpeed();
+            }
+        }
+        
+        if (J6_done == 1) {
+            // Сустав 5
+            if (Joint[4].homing_stage_2 == 1 && J5_stage4 == 0) {
+                stepper[4].setAcceleration(5500);
+                stepper[4].moveTo(j5_homing_offset);
+                stepper[5].setAcceleration(5500);
+                stepper[5].moveTo(0);
+                stepper[4].run();
+                stepper[5].run();
+                if (stepper[4].currentPosition() == j5_homing_offset && stepper[5].currentPosition() == 0) {
+                    J5_stage4 = 1;
+                    stepper[4].setSpeed(1050);
+                    J5_done = 1;
+                    Joint[4].homed = 1;
+                    Joint[5].homed = 1;
+                }
+            }
+            
+            if (J5_stage3 == 1 && Joint[4].homing_stage_2 == 0) {
+                if (digitalRead(Joint[4].LIMIT) == Joint[4].limit_switch_trigger) {
+                    Joint[4].homing_stage_2 = 1;
+                    stepper[4].setSpeed(0);
+                    stepper[4].setCurrentPosition(0);
+                }
+                stepper[4].runSpeed();
+            }
+            
+            if (Joint[4].homing_stage_1 == 1 && J5_stage2 == 0) {
+                stepper[4].moveTo(1550);
+                stepper[4].setSpeed(4050);
+                stepper[4].runSpeedToPosition();
+                if (stepper[4].currentPosition() == 1550) {
+                    J5_stage2 = 1;
+                    J5_stage3 = 1;
+                    stepper[4].setSpeed(-4050);
+                }
+            }
+            
+            if (Joint[4].homing_stage_1 == 0) {
+                if (digitalRead(Joint[4].LIMIT) == Joint[4].limit_switch_trigger) {
+                    Joint[4].homing_stage_1 = 1;
+                    stepper[4].setSpeed(0);
+                    stepper[4].setCurrentPosition(0);
+                }
+                stepper[4].runSpeed();
+            }
+        }
         
         if (J5_done == 1) {
             for (int i = 0; i < 6; i++) {
