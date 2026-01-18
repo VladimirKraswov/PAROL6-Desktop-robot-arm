@@ -1,23 +1,53 @@
+/** @file constants.h (заголовочный файл constants.h)
+    @brief Документированный файл.
+    
+    Здесь объявляются все константные переменные.
+    Для схемы обратитесь к:
+    Для дополнительной функциональности выводов обратитесь к:
+
+*/
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+/* Константы проекта */
+
+/* Версия прошивки/проекта */
 #define VERSION 1
+
+/* Идентификатор устройства (ID) */
 #define ID 1
 
-// Удаляем переопределение ADC_RESOLUTION
-#ifndef ADC_RESOLUTION
+/* Разрешение АЦП (в битах) */
 #define ADC_RESOLUTION 12
-#endif
 
+/* Значение резистора считывания тока (сопротивление шунта) в Омах */
 #define R_SENSE 0.075f
+
+/* Количество сочленений (осей) в роботе */
 #define NUMBER_OF_JOINTS 6
+
+/* Коэффициент микрошага для драйверов шаговых двигателей */
 #define MICROSTEP 32
 
-#define MOTOR1_MAX_CURRENT 2000
-#define MOTOR2_MAX_CURRENT 2000
-#define MOTOR3_MAX_CURRENT 1900
-#define MOTOR4_MAX_CURRENT 1700
-#define MOTOR5_MAX_CURRENT 1700
-#define MOTOR6_MAX_CURRENT 965
+/* Максимальные токи для каждого двигателя (в мА) */
 
-#endif
+/* Двигатель оси 1: максимальный ток 2100 мА, установлено 2000 мА */
+#define MOTOR1_MAX_CURRENT 2000 // Максимум (Max) 2100
+
+/* Двигатель оси 2: максимальный ток 2100 мА, установлено 2000 мА */
+#define MOTOR2_MAX_CURRENT 2000 // Максимум (Max) 2100
+
+/* Двигатель оси 3: максимальный ток 2000 мА, установлено 1900 мА */
+#define MOTOR3_MAX_CURRENT 1900 // Максимум (Max) 2000
+
+/* Двигатель оси 4: максимальный ток 2000 мА, установлено 1700 мА (уменьшено из-за закрытого корпуса) */
+#define MOTOR4_MAX_CURRENT 1700 // Максимум (Max) 2000, но поскольку двигатели в закрытом корпусе, уменьшено (but since the motors are enclosed reduce it)
+
+/* Двигатель оси 5: максимальный ток 2000 мА, установлено 1700 мА (уменьшено из-за закрытого корпуса) */
+#define MOTOR5_MAX_CURRENT 1700 // Максимум (Max) 2000, но поскольку двигатели в закрытом корпусе, уменьшено (but since the motors are enclosed reduce it)
+
+/* Двигатель оси 6: максимальный ток 1000 мА, установлено 965 мА */
+#define MOTOR6_MAX_CURRENT 965 // Максимум (Max) 1000
+
+#endif /* CONSTANTS_H */
